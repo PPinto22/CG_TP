@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
 	// Obter a pasta onde se encontra o ficheiro xml
 	string str(argv[1]);
 	int indice = str.find_last_of("/\\");
-	if (indice == str.size()) indice = 0;
+	if (indice == -1) indice = 0;
 	else indice++;
 	xmlFolder = str.substr(0, indice);
 
