@@ -2,6 +2,10 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <math.h>
+#include <vector>
+
+const double PI = 3.141592653589793238463;
 
 using namespace std;
 
@@ -93,9 +97,45 @@ void box(double x, double y, double z, string ficheiro) {
 }
 
 void sphere(double radius, int slices, int stacks, string ficheiro) {
+
+	Ponto bot(0,-radius,0);
+	Ponto top(0,radius,0);
+	vector<vector<Ponto> > pontos;
+	double x,y,z;
+
+	for (double beta = -PI/2; beta<=PI/2; beta +=PI/stacks){
+		vector<Ponto> aux;
+		for(double alpha = 0; alpha<=2*PI; alpha +=2*PI/slices){
+			z = radius*cos(beta)*cos(alpha);
+			x = radius*cos(beta)*sin(alpha);
+			y = radius*sin(beta);
+			Ponto p (x,y,z);			
+			aux.push_back(p);
+		}
+		pontos.push_back(aux);
+	}
+
 	ofstream outfile(ficheiro);
-	outfile << "Sphere!" << endl;
+	int numVertices = slices*stacks*6; //Cada vertice pertence a 6 triangulos
+	outfile << numVertices << endl;
+	for(int stack = 0; stack<stacks; stack++){
+		for(int slice = 0; slice<slices; slice++){
+			int slice_esquerda;
+			if (slice == 0) slice_esquerda = slices - 1;
+			else slice_esquerda = slice - 1;
+			int slice_direita = (slice + 1)%slices;
+
+			outfile << pontos[stack][slice].x() << " " << pontos[stack][slice].y() << " " << pontos[stack][slice].z() << endl;
+			outfile << pontos[stack + 1][slice].x() << " " << pontos[stack + 1][slice].y() << " " << pontos[stack + 1][slice].z() << endl;
+			outfile << pontos[stack + 1][slice_esquerda].x() << " " << pontos[stack + 1][slice_esquerda].y() << " " << pontos[stack + 1][slice_esquerda].z() << endl;
+
+			outfile << pontos[stack][slice].x() << " " << pontos[stack][slice].y() << " " << pontos[stack][slice].z() << endl;
+			outfile << pontos[stack][slice_direita].x() << " " << pontos[stack][slice_direita].y() << " " << pontos[stack][slice_direita].z() << endl;
+			outfile << pontos[stack+1][slice].x() << " " << pontos[stack+1][slice].y() << " " << pontos[stack+1][slice].z() << endl;
+		}
+	}
 	outfile.close();
+
 }
 
 void cone(double bottomRadius, double height, int slices, int stacks, string ficheiro) {
@@ -108,7 +148,7 @@ void cone(double bottomRadius, double height, int slices, int stacks, string fic
 int main(int argc, char *argv[]) {
 
 	if (argc <= 2) {
-		cout << "Indique a primitiva (plane,box,sphere,cone) e o ficheiro de saída\n";
+		cout << "Indique a primitiva (plane,box,sphere,cone) e o ficheiro de saï¿½da\n";
 	}
 	else if (strcmp(argv[1], "plane") == 0) {
 		if (argc == 4) {
