@@ -6,17 +6,35 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
-TiXmlDocument doc;
-string xmlFolder;
+class Ponto {
+private: double xval, yval, zval;
+
+public:
+	Ponto(double x, double y, double z) {
+		xval = x;
+		yval = y;
+		zval = z;
+	}
+	double x() { return xval; }
+	double y() { return yval; }
+	double z() { return zval; }
+
+};
+
+
 float ax = 0;
 float ay = 0;
 float az = 0;
 float xx = 0;
 float zz = 0;
 int draw_mode = 0; //0 = Fill, 1 = Line, 2 = Point
+
+vector<Ponto> pontos;
+int numPontos;
 
 void changeSize(int w, int h) {
 
@@ -73,30 +91,18 @@ void renderScene(void) {
 		break;
 	}
 
-	//Leitura de ficheiros e desenho
-	TiXmlHandle docHandle(&doc);
-	TiXmlElement* elem = docHandle.FirstChild("scene").FirstChild("model").ToElement();
-	string fileName;
-	double x1,x2,x3,y1,y2,y3,z1,z2,z3;
-	int numVertices;
-	ifstream inFile;
-	for (elem; elem; elem = elem->NextSiblingElement()) {
-		fileName = elem->Attribute("file");
-		fileName.insert(0, xmlFolder);
-		inFile = ifstream(fileName);
-		if (inFile >> numVertices) {
-			for (int i = 0; i < numVertices / 3; i++) {
-				inFile >> x1 >> y1 >> z1;
-				inFile >> x2 >> y2 >> z2;
-				inFile >> x3 >> y3 >> z3;
-				glBegin(GL_TRIANGLES);
-				glVertex3f(x1, y1, z1);
-				glVertex3f(x2, y2, z2);
-				glVertex3f(x3, y3, z3);
-				glEnd();
-			}
-		}
+	//Desenho
+	glBegin(GL_TRIANGLES);
+	for (int i = 0; i < numPontos; i+=3) {
+		Ponto p1(pontos[i]);
+		Ponto p2(pontos[i + 1]);
+		Ponto p3(pontos[i + 2]);
+		glVertex3f(p1.x(), p1.y(), p1.z());
+		glVertex3f(p2.x(), p2.y(), p2.z());
+		glVertex3f(p3.x(), p3.y(), p3.z());
 	}
+	glEnd();
+
 	// End of frame
 	glutSwapBuffers();
 }
@@ -145,19 +151,39 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	doc = TiXmlDocument(argv[1]);
+	TiXmlDocument doc(argv[1]);
 	bool loadOkay = doc.LoadFile();
 	if (!loadOkay) {
 		cout << "Falha ao carregar o ficheiro \"" << argv[1] <<"\"\n";
 		return 2;
 	}
-	
+
 	// Obter a pasta onde se encontra o ficheiro xml
 	string str(argv[1]);
 	int indice = str.find_last_of("/\\");
 	if (indice == -1) indice = 0;
 	else indice++;
-	xmlFolder = str.substr(0, indice);
+	string xmlFolder = str.substr(0, indice);
+
+	TiXmlHandle docHandle(&doc);
+	TiXmlElement* elem = docHandle.FirstChild("scene").FirstChild("model").ToElement();
+	string fileName;
+	double x,y,z;
+	ifstream inFile;
+	for (elem; elem; elem = elem->NextSiblingElement()) {
+		fileName = elem->Attribute("file");
+		fileName.insert(0, xmlFolder);
+		inFile = ifstream(fileName);
+		int pontosFicheiro;
+		if (inFile >> pontosFicheiro) {
+			numPontos += pontosFicheiro;
+			for (int i = 0; i < pontosFicheiro; i++) {
+				inFile >> x >> y >> z;
+				Ponto p(x, y, z);
+				pontos.push_back(p);
+			}
+		}
+	}
 
 	// init GLUT and the window
 	glutInit(&argc, argv);

@@ -100,6 +100,7 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 
 	vector<vector<Ponto> > pontos;
 	double x,y,z;
+	Ponto topo(0, radius, 0);
 
 	for (double beta = -PI/2; beta<=PI/2; beta +=PI/stacks){
 		vector<Ponto> aux;
@@ -114,9 +115,11 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 	}
 
 	ofstream outfile(ficheiro);
-	int numVertices = slices*stacks*6; //Cada vertice pertence a 6 triangulos
+	int numVertices = (stacks - 1)*slices * 6 + 3 * slices;
 	outfile << numVertices << endl;
-	for(int stack = 0; stack<stacks; stack++){
+
+	//Escreve triangulos intermédios
+	for(int stack = 0; stack<stacks-1; stack++){
 		for(int slice = 0; slice<slices; slice++){
 			int slice_esquerda;
 			if (slice == 0) slice_esquerda = slices - 1;
@@ -130,7 +133,18 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 			outfile << pontos[stack][slice].x() << " " << pontos[stack][slice].y() << " " << pontos[stack][slice].z() << endl;
 			outfile << pontos[stack][slice_direita].x() << " " << pontos[stack][slice_direita].y() << " " << pontos[stack][slice_direita].z() << endl;
 			outfile << pontos[stack+1][slice].x() << " " << pontos[stack+1][slice].y() << " " << pontos[stack+1][slice].z() << endl;
+
 		}
+	}
+
+	//Escreve triangulos superiores
+	for (int slice = 0; slice < slices; slice++) {
+		int slice_esquerda;
+		if (slice == 0) slice_esquerda = slices - 1;
+		else slice_esquerda = slice - 1;
+		outfile << pontos[stacks - 1][slice].x() << " " << pontos[stacks - 1][slice].y() << " " << pontos[stacks - 1][slice].z() << endl;
+		outfile << topo.x() << " " << topo.y() << " " << topo.z() << endl;
+		outfile << pontos[stacks - 1][slice_esquerda].x() << " " << pontos[stacks - 1][slice_esquerda].y() << " " << pontos[stacks - 1][slice_esquerda].z() << endl;
 	}
 	outfile.close();
 
@@ -139,6 +153,7 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 void cone(double bottomRadius, double height, int slices, int stacks, string ficheiro) {
 
 	Ponto pBot(0,-height/2,0);
+	Ponto topo(0, height / 2, 0);
 	vector<vector<Ponto> > pontos;
 	double raio = bottomRadius;
 	int y=-height/2;
@@ -157,9 +172,11 @@ void cone(double bottomRadius, double height, int slices, int stacks, string fic
 	}
 
 	ofstream outfile(ficheiro);
-	int numVertices = slices*stacks*6 + 3*slices;
+	int numVertices = (slices - 1)*stacks * 6 + 3 * slices + 3 * slices;
 	outfile << numVertices << endl;
-	for(int stack = 0; stack<stacks; stack++){
+
+	//Escreve triangulos intermédios
+	for(int stack = 0; stack<stacks-1; stack++){
 		for(int slice = 0; slice<slices; slice++){
 			int slice_esquerda;
 			if (slice == 0) slice_esquerda = slices - 1;
@@ -175,14 +192,21 @@ void cone(double bottomRadius, double height, int slices, int stacks, string fic
 			outfile << pontos[stack+1][slice].x() << " " << pontos[stack+1][slice].y() << " " << pontos[stack+1][slice].z() << endl;
 		}
 	}
-	//Escrever triangulos da base
+
+	//Escreve triangulos da base
 	for(int slice = 0; slice<slices; slice++){
 		int slice_direita=(slice+1)%slices;
-
 		outfile << pontos[0][slice].x() << " " << pontos[0][slice].y() << " " << pontos[0][slice].z() << endl;
 		outfile << pBot.x() << " " << pBot.y() << " " << pBot.z() << endl;
 		outfile << pontos[0][slice_direita].x() << " " << pontos[0][slice_direita].y() << " " << pontos[0][slice_direita].z() << endl;
+	}
 
+	//Escreve triangulos do topo
+	for (int slice = 0; slice<slices; slice++) {
+		int slice_direita = (slice + 1) % slices;
+		outfile << pontos[stacks-1][slice].x() << " " << pontos[stacks-1][slice].y() << " " << pontos[stacks - 1][slice].z() << endl;
+		outfile << pontos[stacks-1][slice_direita].x() << " " << pontos[stacks - 1][slice_direita].y() << " " << pontos[stacks - 1][slice_direita].z() << endl;
+		outfile << topo.x() << " " << topo.y() << " " << topo.z() << endl;
 	}
 	outfile.close();
 
