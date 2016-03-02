@@ -98,8 +98,6 @@ void box(double x, double y, double z, string ficheiro) {
 
 void sphere(double radius, int slices, int stacks, string ficheiro) {
 
-	Ponto bot(0,-radius,0);
-	Ponto top(0,radius,0);
 	vector<vector<Ponto> > pontos;
 	double x,y,z;
 
@@ -139,9 +137,55 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 }
 
 void cone(double bottomRadius, double height, int slices, int stacks, string ficheiro) {
+
+	Ponto pBot(0,-height/2,0);
+	vector<vector<Ponto> > pontos;
+	double raio = bottomRadius;
+	int y=-height/2;
+	double x,z;
+
+	for (double y = -height/2; y<=height/2; y +=height/stacks){
+		vector<Ponto> aux;
+		for(double alpha = 0; alpha<=2*PI; alpha +=2*PI/slices){
+			z = raio*sin(alpha);
+			x = raio*cos(alpha);
+			Ponto p (x,y,z);			
+			aux.push_back(p);
+		}
+		pontos.push_back(aux);
+		raio-=bottomRadius/stacks;
+	}
+
 	ofstream outfile(ficheiro);
-	outfile << "Cone!" << endl;
+	int numVertices = slices*stacks*6 + 3*slices;
+	outfile << numVertices << endl;
+	for(int stack = 0; stack<stacks; stack++){
+		for(int slice = 0; slice<slices; slice++){
+			int slice_esquerda;
+			if (slice == 0) slice_esquerda = slices - 1;
+			else slice_esquerda = slice - 1;
+			int slice_direita = (slice + 1)%slices;
+
+			outfile << pontos[stack][slice].x() << " " << pontos[stack][slice].y() << " " << pontos[stack][slice].z() << endl;
+			outfile << pontos[stack + 1][slice].x() << " " << pontos[stack + 1][slice].y() << " " << pontos[stack + 1][slice].z() << endl;
+			outfile << pontos[stack + 1][slice_esquerda].x() << " " << pontos[stack + 1][slice_esquerda].y() << " " << pontos[stack + 1][slice_esquerda].z() << endl;
+
+			outfile << pontos[stack][slice].x() << " " << pontos[stack][slice].y() << " " << pontos[stack][slice].z() << endl;
+			outfile << pontos[stack][slice_direita].x() << " " << pontos[stack][slice_direita].y() << " " << pontos[stack][slice_direita].z() << endl;
+			outfile << pontos[stack+1][slice].x() << " " << pontos[stack+1][slice].y() << " " << pontos[stack+1][slice].z() << endl;
+		}
+	}
+	//Escrever triangulos da base
+	for(int slice = 0; slice<slices; slice++){
+		int slice_direita=(slice+1)%slices;
+
+		outfile << pontos[0][slice].x() << " " << pontos[0][slice].y() << " " << pontos[0][slice].z() << endl;
+		outfile << pBot.x() << " " << pBot.y() << " " << pBot.z() << endl;
+		outfile << pontos[0][slice_direita].x() << " " << pontos[0][slice_direita].y() << " " << pontos[0][slice_direita].z() << endl;
+
+	}
 	outfile.close();
+
 }
 
 

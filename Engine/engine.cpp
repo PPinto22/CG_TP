@@ -105,20 +105,20 @@ void renderScene(void) {
 
 // write function to process keyboard events
 void keyPressed(unsigned char key, int x, int y) {
-	if (key == 'w' || key == 'W') ax -= 5;
-	if (key == 's' || key == 'S') ax += 5;
-	if (key == 'a' || key == 'A') ay += 5;
-	if (key == 'd' || key == 'D') ay -= 5;
-	if (key == 'q' || key == 'Q') az += 5;
-	if (key == 'e' || key == 'E') az -= 5;
+	if (key == 'w' || key == 'W') ax -= 10;
+	if (key == 's' || key == 'S') ax += 10;
+	if (key == 'a' || key == 'A') ay += 10;
+	if (key == 'd' || key == 'D') ay -= 10;
+	if (key == 'q' || key == 'Q') az += 10;
+	if (key == 'e' || key == 'E') az -= 10;
 	glutPostRedisplay();
 }
 
 void arrowPressed(int key_code, int x, int y) {
-	if (key_code == GLUT_KEY_UP) zz-=0.2;
-	else if (key_code == GLUT_KEY_DOWN) zz+=0.2;
-	else if (key_code == GLUT_KEY_LEFT) xx-=0.2;
-	else if (key_code == GLUT_KEY_RIGHT) xx+=0.2;
+	if (key_code == GLUT_KEY_UP) zz-=0.5;
+	else if (key_code == GLUT_KEY_DOWN) zz+=0.5;
+	else if (key_code == GLUT_KEY_LEFT) xx-=0.5;
+	else if (key_code == GLUT_KEY_RIGHT) xx+=0.5;
 	glutPostRedisplay();
 }
 
