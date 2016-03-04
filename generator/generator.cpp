@@ -1,11 +1,10 @@
+#define _USE_MATH_DEFINES
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <math.h>
 #include <vector>
-
-const double PI = 3.141592653589793238463;
 
 using namespace std;
 
@@ -102,9 +101,15 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 	double x,y,z;
 	Ponto topo(0, radius, 0);
 
-	for (double beta = -PI/2; beta<=PI/2; beta +=PI/stacks){
+	double beta;
+	double alpha;
+	//Gera pontos
+	for (int i = 0; i<=stacks; i++){
+		beta = (i*M_PI / stacks)-M_PI/2;
 		vector<Ponto> aux;
-		for(double alpha = 0; alpha<=2*PI; alpha +=2*PI/slices){
+		double alpha = 0;
+		for(int j = 0; j<slices; j++){
+			alpha = j * 2 * M_PI / slices;
 			z = radius*cos(beta)*cos(alpha);
 			x = radius*cos(beta)*sin(alpha);
 			y = radius*sin(beta);
@@ -115,11 +120,11 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 	}
 
 	ofstream outfile(ficheiro);
-	int numVertices = (stacks - 1)*slices * 6 + 3 * slices;
+	int numVertices = stacks*slices * 6;
 	outfile << numVertices << endl;
 
-	//Escreve triangulos intermédios
-	for(int stack = 0; stack<stacks-1; stack++){
+	//Escreve triangulos
+	for(int stack = 0; stack<stacks; stack++){
 		for(int slice = 0; slice<slices; slice++){
 			int slice_esquerda;
 			if (slice == 0) slice_esquerda = slices - 1;
@@ -136,16 +141,6 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 
 		}
 	}
-
-	//Escreve triangulos superiores
-	for (int slice = 0; slice < slices; slice++) {
-		int slice_esquerda;
-		if (slice == 0) slice_esquerda = slices - 1;
-		else slice_esquerda = slice - 1;
-		outfile << pontos[stacks - 1][slice].x() << " " << pontos[stacks - 1][slice].y() << " " << pontos[stacks - 1][slice].z() << endl;
-		outfile << topo.x() << " " << topo.y() << " " << topo.z() << endl;
-		outfile << pontos[stacks - 1][slice_esquerda].x() << " " << pontos[stacks - 1][slice_esquerda].y() << " " << pontos[stacks - 1][slice_esquerda].z() << endl;
-	}
 	outfile.close();
 
 }
@@ -153,15 +148,16 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 void cone(double bottomRadius, double height, int slices, int stacks, string ficheiro) {
 
 	Ponto pBot(0,-height/2,0);
-	Ponto topo(0, height / 2, 0);
 	vector<vector<Ponto> > pontos;
 	double raio = bottomRadius;
-	int y=-height/2;
-	double x,z;
+	double x, z, y, alpha;
 
-	for (double y = -height/2; y<=height/2; y +=height/stacks){
+	//Gera pontos
+	for (int i = 0; i <= stacks; i++){
+		y = (i*height / stacks) - (height / 2);
 		vector<Ponto> aux;
-		for(double alpha = 0; alpha<=2*PI; alpha +=2*PI/slices){
+		for (int j = 0; j < slices; j++){
+			alpha = j * 2 * M_PI / slices;
 			z = raio*sin(alpha);
 			x = raio*cos(alpha);
 			Ponto p (x,y,z);			
@@ -172,11 +168,11 @@ void cone(double bottomRadius, double height, int slices, int stacks, string fic
 	}
 
 	ofstream outfile(ficheiro);
-	int numVertices = (slices - 1)*stacks * 6 + 3 * slices + 3 * slices;
+	int numVertices = slices*stacks * 6 + 3 * slices;
 	outfile << numVertices << endl;
 
-	//Escreve triangulos intermédios
-	for(int stack = 0; stack<stacks-1; stack++){
+	//Escreve triangulos laterais
+	for(int stack = 0; stack<stacks; stack++){
 		for(int slice = 0; slice<slices; slice++){
 			int slice_esquerda;
 			if (slice == 0) slice_esquerda = slices - 1;
@@ -201,13 +197,6 @@ void cone(double bottomRadius, double height, int slices, int stacks, string fic
 		outfile << pontos[0][slice_direita].x() << " " << pontos[0][slice_direita].y() << " " << pontos[0][slice_direita].z() << endl;
 	}
 
-	//Escreve triangulos do topo
-	for (int slice = 0; slice<slices; slice++) {
-		int slice_direita = (slice + 1) % slices;
-		outfile << pontos[stacks-1][slice].x() << " " << pontos[stacks-1][slice].y() << " " << pontos[stacks - 1][slice].z() << endl;
-		outfile << pontos[stacks-1][slice_direita].x() << " " << pontos[stacks - 1][slice_direita].y() << " " << pontos[stacks - 1][slice_direita].z() << endl;
-		outfile << topo.x() << " " << topo.y() << " " << topo.z() << endl;
-	}
 	outfile.close();
 
 }

@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,11 +27,10 @@ public:
 };
 
 
-float ax = 0;
-float ay = 0;
-float az = 0;
-float xx = 0;
-float zz = 0;
+float camDistance = 10;
+int nivelAlpha, nivelBeta;
+int niveisAlpha = 16;
+int niveisBeta = 16;
 int draw_mode = 0; //0 = Fill, 1 = Line, 2 = Point
 
 vector<Ponto> pontos;
@@ -68,15 +68,16 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-	gluLookAt(0.0, 0.0, 10.0,
+	float beta = nivelBeta * M_PI_2/niveisBeta;
+	float alpha = nivelAlpha * M_PI/niveisAlpha;
+	float z = camDistance * cos(beta) * cos(alpha);
+	float x = camDistance * cos(beta) * sin(alpha);
+	float y = camDistance * sin(beta);
+	gluLookAt(x, y, z,
 		0.0, 0.0, 0.0,
 		0.0f, 1.0f, 0.0f);
 
 	// put the geometric transformations here
-	glTranslatef(xx, 0, zz);
-	glRotatef(ax, 1, 0, 0);
-	glRotatef(ay, 0, 1, 0);
-	glRotatef(az, 0, 0, 1);
 
 	// Drawing Mode
 	switch (draw_mode) {
@@ -111,20 +112,26 @@ void renderScene(void) {
 
 // write function to process keyboard events
 void keyPressed(unsigned char key, int x, int y) {
-	if (key == 'w' || key == 'W') ax -= 10;
-	if (key == 's' || key == 'S') ax += 10;
-	if (key == 'a' || key == 'A') ay += 10;
-	if (key == 'd' || key == 'D') ay -= 10;
-	if (key == 'q' || key == 'Q') az += 10;
-	if (key == 'e' || key == 'E') az -= 10;
-	glutPostRedisplay();
-}
-
-void arrowPressed(int key_code, int x, int y) {
-	if (key_code == GLUT_KEY_UP) zz-=0.5;
-	else if (key_code == GLUT_KEY_DOWN) zz+=0.5;
-	else if (key_code == GLUT_KEY_LEFT) xx-=0.5;
-	else if (key_code == GLUT_KEY_RIGHT) xx+=0.5;
+	switch (key) {
+	case 'w':case 'W':
+		if (nivelBeta < niveisBeta) nivelBeta++;
+		break;
+	case 's':case 'S':
+		if (nivelBeta > -niveisBeta) nivelBeta--;
+		break;
+	case 'a':case 'A':
+		nivelAlpha--;
+		break;
+	case 'd':case 'D':
+		nivelAlpha++;
+		break;
+	case 'z':case 'Z':
+		camDistance += 0.5;
+		break;
+	case 'x':case'X':
+		camDistance -= 0.5;
+		break;
+	}
 	glutPostRedisplay();
 }
 
@@ -193,8 +200,7 @@ int main(int argc, char **argv) {
 	glutCreateWindow("3D Engine");
 
 
-	// Required callback registry 
-	glutSpecialFunc(arrowPressed);
+	// Required callback registry
 	glutKeyboardFunc(keyPressed);
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
@@ -205,7 +211,7 @@ int main(int argc, char **argv) {
 	glutAddMenuEntry("Fill", 1);
 	glutAddMenuEntry("Line", 2);
 	glutAddMenuEntry("Point", 3);
-	glutAttachMenu(GLUT_LEFT_BUTTON);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
 
 	//  OpenGL settings
