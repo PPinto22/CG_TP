@@ -126,18 +126,15 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 	//Escreve triangulos
 	for(int stack = 0; stack<stacks; stack++){
 		for(int slice = 0; slice<slices; slice++){
-			int slice_esquerda;
-			if (slice == 0) slice_esquerda = slices - 1;
-			else slice_esquerda = slice - 1;
 			int slice_direita = (slice + 1)%slices;
 
 			outfile << pontos[stack][slice].x() << " " << pontos[stack][slice].y() << " " << pontos[stack][slice].z() << endl;
+			outfile << pontos[stack+1][slice_direita].x() << " " << pontos[stack+1][slice_direita].y() << " " << pontos[stack+1][slice_direita].z() << endl;
 			outfile << pontos[stack + 1][slice].x() << " " << pontos[stack + 1][slice].y() << " " << pontos[stack + 1][slice].z() << endl;
-			outfile << pontos[stack + 1][slice_esquerda].x() << " " << pontos[stack + 1][slice_esquerda].y() << " " << pontos[stack + 1][slice_esquerda].z() << endl;
 
 			outfile << pontos[stack][slice].x() << " " << pontos[stack][slice].y() << " " << pontos[stack][slice].z() << endl;
 			outfile << pontos[stack][slice_direita].x() << " " << pontos[stack][slice_direita].y() << " " << pontos[stack][slice_direita].z() << endl;
-			outfile << pontos[stack+1][slice].x() << " " << pontos[stack+1][slice].y() << " " << pontos[stack+1][slice].z() << endl;
+			outfile << pontos[stack+1][slice_direita].x() << " " << pontos[stack+1][slice_direita].y() << " " << pontos[stack+1][slice_direita].z() << endl;
 
 		}
 	}
@@ -174,18 +171,15 @@ void cone(double bottomRadius, double height, int slices, int stacks, string fic
 	//Escreve triangulos laterais
 	for(int stack = 0; stack<stacks; stack++){
 		for(int slice = 0; slice<slices; slice++){
-			int slice_esquerda;
-			if (slice == 0) slice_esquerda = slices - 1;
-			else slice_esquerda = slice - 1;
 			int slice_direita = (slice + 1)%slices;
 
 			outfile << pontos[stack][slice].x() << " " << pontos[stack][slice].y() << " " << pontos[stack][slice].z() << endl;
+			outfile << pontos[stack + 1][slice_direita].x() << " " << pontos[stack + 1][slice_direita].y() << " " << pontos[stack + 1][slice_direita].z() << endl;
 			outfile << pontos[stack + 1][slice].x() << " " << pontos[stack + 1][slice].y() << " " << pontos[stack + 1][slice].z() << endl;
-			outfile << pontos[stack + 1][slice_esquerda].x() << " " << pontos[stack + 1][slice_esquerda].y() << " " << pontos[stack + 1][slice_esquerda].z() << endl;
 
 			outfile << pontos[stack][slice].x() << " " << pontos[stack][slice].y() << " " << pontos[stack][slice].z() << endl;
 			outfile << pontos[stack][slice_direita].x() << " " << pontos[stack][slice_direita].y() << " " << pontos[stack][slice_direita].z() << endl;
-			outfile << pontos[stack+1][slice].x() << " " << pontos[stack+1][slice].y() << " " << pontos[stack+1][slice].z() << endl;
+			outfile << pontos[stack + 1][slice_direita].x() << " " << pontos[stack + 1][slice_direita].y() << " " << pontos[stack + 1][slice_direita].z() << endl;
 		}
 	}
 
