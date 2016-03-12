@@ -8,48 +8,48 @@
 
 using namespace std;
 
-string doubleToString(double number) {
+string floatToString(float number) {
 	ostringstream buff;
 	buff << number;
 	return buff.str();
 }
 
 class Ponto {
-private: double xval, yval, zval;
+private: float xval, yval, zval;
 
 public:
-	Ponto(double x, double y, double z) {
+	Ponto(float x, float y, float z) {
 		xval = x;
 		yval = y;
 		zval = z;
 	}
-	double x() { return xval; }
-	double y() { return yval; }
-	double z() { return zval; }
+	float x() { return xval; }
+	float y() { return yval; }
+	float z() { return zval; }
 
 };
 
 string escreveTriangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3) {
-	string triangulo = doubleToString(ponto1.x()) + " " + doubleToString(ponto1.y()) + " " + doubleToString(ponto1.z()) + "\n" +
-		doubleToString(ponto2.x()) + " " + doubleToString(ponto2.y()) + " " + doubleToString(ponto2.z()) + "\n" +
-		doubleToString(ponto3.x()) + " " + doubleToString(ponto3.y()) + " " + doubleToString(ponto3.z());
+	string triangulo = floatToString(ponto1.x()) + " " + floatToString(ponto1.y()) + " " + floatToString(ponto1.z()) + "\n" +
+		floatToString(ponto2.x()) + " " + floatToString(ponto2.y()) + " " + floatToString(ponto2.z()) + "\n" +
+		floatToString(ponto3.x()) + " " + floatToString(ponto3.y()) + " " + floatToString(ponto3.z());
 	return triangulo;
 }
 
 string escreveRectangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3, Ponto ponto4) {
-	string rectangulo = doubleToString(ponto1.x()) + " " + doubleToString(ponto1.y()) + " " + doubleToString(ponto1.z()) + "\n" +
-		doubleToString(ponto2.x()) + " " + doubleToString(ponto2.y()) + " " + doubleToString(ponto2.z()) + "\n" +
-		doubleToString(ponto3.x()) + " " + doubleToString(ponto3.y()) + " " + doubleToString(ponto3.z()) + "\n" +
-		doubleToString(ponto3.x()) + " " + doubleToString(ponto3.y()) + " " + doubleToString(ponto3.z()) + "\n" +
-		doubleToString(ponto4.x()) + " " + doubleToString(ponto4.y()) + " " + doubleToString(ponto4.z()) + "\n" +
-		doubleToString(ponto1.x()) + " " + doubleToString(ponto1.y()) + " " + doubleToString(ponto1.z());
+	string rectangulo = floatToString(ponto1.x()) + " " + floatToString(ponto1.y()) + " " + floatToString(ponto1.z()) + "\n" +
+		floatToString(ponto2.x()) + " " + floatToString(ponto2.y()) + " " + floatToString(ponto2.z()) + "\n" +
+		floatToString(ponto3.x()) + " " + floatToString(ponto3.y()) + " " + floatToString(ponto3.z()) + "\n" +
+		floatToString(ponto3.x()) + " " + floatToString(ponto3.y()) + " " + floatToString(ponto3.z()) + "\n" +
+		floatToString(ponto4.x()) + " " + floatToString(ponto4.y()) + " " + floatToString(ponto4.z()) + "\n" +
+		floatToString(ponto1.x()) + " " + floatToString(ponto1.y()) + " " + floatToString(ponto1.z());
 	return rectangulo;
 }
 
 
-void plane(double lado, string ficheiro) {
+void plane(float lado, string ficheiro) {
 	string nVertices = ("6");
-	double coord = lado / 2;
+	float coord = lado / 2;
 
 	Ponto pt1(coord, 0, coord);
 	Ponto pt2(coord, 0, -coord);
@@ -67,11 +67,11 @@ void plane(double lado, string ficheiro) {
 	outfile.close();
 }
 
-void box(double x, double y, double z, string ficheiro) {
+void box(float x, float y, float z, string ficheiro) {
 	string nVertices = ("36");
-	double coordX = x / 2;
-	double coordY = y / 2;
-	double coordZ = z / 2;
+	float coordX = x / 2;
+	float coordY = y / 2;
+	float coordZ = z / 2;
 
 	Ponto pt1(coordX, -coordY, -coordZ);
 	Ponto pt2(-coordX, -coordY, -coordZ);
@@ -95,19 +95,19 @@ void box(double x, double y, double z, string ficheiro) {
 	outfile.close();
 }
 
-void sphere(double radius, int slices, int stacks, string ficheiro) {
+void sphere(float radius, int slices, int stacks, string ficheiro) {
 
 	vector<vector<Ponto> > pontos;
-	double x,y,z;
+	float x,y,z;
 	Ponto topo(0, radius, 0);
 
-	double beta;
-	double alpha;
+	float beta;
+	float alpha;
 	//Gera pontos
 	for (int i = 0; i<=stacks; i++){
 		beta = (i*M_PI / stacks)-M_PI/2;
 		vector<Ponto> aux;
-		double alpha = 0;
+		float alpha = 0;
 		for(int j = 0; j<slices; j++){
 			alpha = j * 2 * M_PI / slices;
 			z = radius*cos(beta)*cos(alpha);
@@ -142,12 +142,12 @@ void sphere(double radius, int slices, int stacks, string ficheiro) {
 
 }
 
-void cone(double bottomRadius, double height, int slices, int stacks, string ficheiro) {
+void cone(float bottomRadius, float height, int slices, int stacks, string ficheiro) {
 
 	Ponto pBot(0,-height/2,0);
 	vector<vector<Ponto> > pontos;
-	double raio = bottomRadius;
-	double x, z, y, alpha;
+	float raio = bottomRadius;
+	float x, z, y, alpha;
 
 	//Gera pontos
 	for (int i = 0; i <= stacks; i++){

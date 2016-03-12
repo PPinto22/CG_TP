@@ -12,17 +12,17 @@
 using namespace std;
 
 class Ponto {
-private: double xval, yval, zval;
+private: float xval, yval, zval;
 
 public:
-	Ponto(double x, double y, double z) {
+	Ponto(float x, float y, float z) {
 		xval = x;
 		yval = y;
 		zval = z;
 	}
-	double x() { return xval; }
-	double y() { return yval; }
-	double z() { return zval; }
+	float x() { return xval; }
+	float y() { return yval; }
+	float z() { return zval; }
 
 };
 
@@ -175,7 +175,7 @@ int main(int argc, char **argv) {
 	TiXmlHandle docHandle(&doc);
 	TiXmlElement* elem = docHandle.FirstChild("scene").FirstChild("model").ToElement();
 	string fileName;
-	double x,y,z;
+	float x,y,z;
 	ifstream inFile;
 	for (elem; elem; elem = elem->NextSiblingElement()) {
 		fileName = elem->Attribute("file");
