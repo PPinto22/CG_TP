@@ -23,9 +23,40 @@ public:
 	float x() { return xval; }
 	float y() { return yval; }
 	float z() { return zval; }
-
 };
 
+class Rotacao {
+public:
+	float angulo, x, y, z;
+
+	Rotacao(float angulo, float x, float y, float z) {
+		this->angulo = angulo;
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	}
+};
+
+class Transformacao{
+public:
+	vector<Rotacao> rotacoes;
+	float tx, ty, tz;
+	float sx, sy, sz;
+
+	Transformacao(vector<Rotacao> rotacoes, float tx, float ty, float tz, float sx, float sy, float sz) {
+		this->rotacoes = rotacoes;
+		this->tx = tx;
+		this->ty = ty;
+		this->tz = tz;
+		this->sx = sx;
+		this->sy = sy;
+		this->sz = sz;
+	}
+
+	void addRotacao(Rotacao rotacao) {
+		rotacoes.push_back(rotacao);
+	}
+};
 
 float camDistance = 10;
 int nivelAlpha, nivelBeta;
@@ -33,8 +64,11 @@ int niveisAlpha = 16;
 int niveisBeta = 16;
 int draw_mode = 0; //0 = Fill, 1 = Line, 2 = Point
 
-vector<Ponto> pontos;
-int numPontos;
+/*vector<Ponto> pontos;
+int numPontos;*/
+
+vector<vector<float> > pontos;
+vector<Transformacao> transformacoes;
 
 void changeSize(int w, int h) {
 
@@ -93,7 +127,7 @@ void renderScene(void) {
 	}
 
 	//Desenho
-	glBegin(GL_TRIANGLES);
+	/*glBegin(GL_TRIANGLES);
 	for (int i = 0; i < numPontos; i+=3) {
 		Ponto p1(pontos[i]);
 		Ponto p2(pontos[i + 1]);
@@ -102,7 +136,7 @@ void renderScene(void) {
 		glVertex3f(p2.x(), p2.y(), p2.z());
 		glVertex3f(p3.x(), p3.y(), p3.z());
 	}
-	glEnd();
+	glEnd();*/
 
 	// End of frame
 	glutSwapBuffers();
@@ -151,6 +185,71 @@ void menuHandler(int id_op) {
 	glutPostRedisplay();
 }
 
+int countModels(int count, TiXmlElement* elem) {
+	int n = 0;
+	for (elem; elem; elem = elem->NextSiblingElement()) {
+		TiXmlElement* model = elem->FirstChildElement("models")->FirstChildElement("model");
+		for (model; model; model = model->NextSiblingElement()) {
+			n++;
+		}
+		TiXmlElement* group = elem->FirstChildElement("group");
+		for (group; group; group = group->NextSiblingElement()) {
+			n += countModels(n, group);
+		}
+	}
+	return n;
+}
+
+void prepareScene(TiXmlHandle doc, string doc_path) {
+	TiXmlElement* elem = doc.FirstChild("scene").FirstChild("group").ToElement();
+	if (!elem) return;
+	int numModelos = countModels(0,elem);
+	string fileName;
+	ifstream inFile;
+	for (elem; elem; elem = elem->NextSiblingElement()) {
+		TiXmlElement* translacoes = elem->FirstChildElement("translate");
+		float tx, ty, tz;
+		if (translacoes) {
+			tx = atof(translacoes->Attribute("X"));
+			ty = atof(translacoes->Attribute("Y"));
+			tz = atof(translacoes->Attribute("Z"));
+		}
+		TiXmlElement* rotacoes = elem->FirstChildElement("rotate");
+		vector<Rotacao> vectorR;
+		for (rotacoes; rotacoes; rotacoes = rotacoes->NextSiblingElement()) {
+			float angle, ax, ay, az;
+			if (rotacoes) {
+				angle = atof(translacoes->Attribute("angle"));
+				ax = atof(translacoes->Attribute("axisX"));
+				ay = atof(translacoes->Attribute("axisY"));
+				az = atof(translacoes->Attribute("axisZ"));
+			}
+			Rotacao rotacao(angle, ax, ay, az);
+			vectorR.push_back(rotacao);
+		}
+
+		float sx = 1;
+		float sy = 1;
+		float sz = 1;
+		/*
+		 *	Escala?
+		 */
+		
+		Transformacao transformacao(vectorR, tx, ty, tz, sx, sy, sz);
+		fileName = elem->Attribute("file");
+		fileName.insert(0, doc_path);
+		/*inFile = ifstream(fileName);
+		int pontosFicheiro;
+		if (inFile >> pontosFicheiro) {
+			for (int i = 0; i < pontosFicheiro; i++) {
+				inFile >> x >> y >> z;
+				Ponto p(x, y, z);
+				pontos.push_back(p);
+			}
+		}*/
+	}
+}
+
 int main(int argc, char **argv) {
 
 	if (argc < 2) {
@@ -173,24 +272,8 @@ int main(int argc, char **argv) {
 	string xmlFolder = str.substr(0, indice);
 
 	TiXmlHandle docHandle(&doc);
-	TiXmlElement* elem = docHandle.FirstChild("scene").FirstChild("model").ToElement();
-	string fileName;
-	float x,y,z;
-	ifstream inFile;
-	for (elem; elem; elem = elem->NextSiblingElement()) {
-		fileName = elem->Attribute("file");
-		fileName.insert(0, xmlFolder);
-		inFile = ifstream(fileName);
-		int pontosFicheiro;
-		if (inFile >> pontosFicheiro) {
-			numPontos += pontosFicheiro;
-			for (int i = 0; i < pontosFicheiro; i++) {
-				inFile >> x >> y >> z;
-				Ponto p(x, y, z);
-				pontos.push_back(p);
-			}
-		}
-	}
+
+	prepareScene(docHandle, xmlFolder);
 
 	// init GLUT and the window
 	glutInit(&argc, argv);
