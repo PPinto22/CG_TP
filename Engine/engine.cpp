@@ -2,12 +2,14 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <glew.h>
 #include <GL/glut.h>
 #include <tinyxml.h>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <vector>
+#pragma comment(lib,"glew32.lib")
 
 using namespace std;
 
@@ -53,22 +55,38 @@ public:
 		this->sz = sz;
 	}
 
-	void addRotacao(Rotacao rotacao) {
-		rotacoes.push_back(rotacao);
+	Transformacao() {
+		this->tx = 0.0f; this->ty = 0.0f; this->tz = 0.0f;
+		this->sx = 1.0f; this->sy = 1.0f; this->sz = 1.0f;
+	}
+
+	void merge(Transformacao t) {
+		this->tx += t.tx; this->ty += t.ty; this->tz += t.tz;
+		this->sx *= t.sx; this->sy *= t.sy; this->sz *= t.sz;
+		vector<Rotacao> rotacoesAux;
+		for (int i = 0; i < t.rotacoes.size(); i++) {
+			rotacoesAux.push_back(t.rotacoes[i]);
+		}
+		for (int i = 0; i < this->rotacoes.size(); i++) {
+			rotacoesAux.push_back(this->rotacoes[i]);
+		}
+		rotacoes.clear();
+		this->rotacoes = rotacoesAux;
 	}
 };
 
-float camDistance = 10;
-int nivelAlpha, nivelBeta;
+float camDistance = 50;
+int nivelAlpha = 0, nivelBeta = 0;
 int niveisAlpha = 16;
 int niveisBeta = 16;
 int draw_mode = 0; //0 = Fill, 1 = Line, 2 = Point
 
-/*vector<Ponto> pontos;
-int numPontos;*/
-
-vector<vector<float> > pontos;
+GLuint* buffers;
+int *numVertices;
+int numModelos;
 vector<Transformacao> transformacoes;
+
+string xmlPath;
 
 void changeSize(int w, int h) {
 
@@ -111,8 +129,6 @@ void renderScene(void) {
 		0.0, 0.0, 0.0,
 		0.0f, 1.0f, 0.0f);
 
-	// put the geometric transformations here
-
 	// Drawing Mode
 	switch (draw_mode) {
 	case 0:
@@ -126,17 +142,23 @@ void renderScene(void) {
 		break;
 	}
 
-	//Desenho
-	/*glBegin(GL_TRIANGLES);
-	for (int i = 0; i < numPontos; i+=3) {
-		Ponto p1(pontos[i]);
-		Ponto p2(pontos[i + 1]);
-		Ponto p3(pontos[i + 2]);
-		glVertex3f(p1.x(), p1.y(), p1.z());
-		glVertex3f(p2.x(), p2.y(), p2.z());
-		glVertex3f(p3.x(), p3.y(), p3.z());
+	for (int i = 0; i < numModelos; i++) {
+		glPushMatrix();
+
+		Transformacao transformacao = transformacoes[i];
+		glTranslatef(transformacao.tx, transformacao.ty, transformacao.tz);
+		for (int j=0; j<transformacao.rotacoes.size(); j++) {
+			Rotacao rotacao = transformacao.rotacoes[j];
+			glRotatef(rotacao.angulo, rotacao.x, rotacao.y, rotacao.z);
+		}
+		glScalef(transformacao.sx, transformacao.sy, transformacao.sz);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
+		glVertexPointer(3, GL_FLOAT, 0, 0);
+		glDrawArrays(GL_TRIANGLES, 0, numVertices[i]);
+
+		glPopMatrix();
 	}
-	glEnd();*/
 
 	// End of frame
 	glutSwapBuffers();
@@ -148,10 +170,10 @@ void renderScene(void) {
 void keyPressed(unsigned char key, int x, int y) {
 	switch (key) {
 	case 'w':case 'W':
-		if (nivelBeta < niveisBeta) nivelBeta++;
+		if (nivelBeta < niveisBeta-1) nivelBeta++;
 		break;
 	case 's':case 'S':
-		if (nivelBeta > -niveisBeta) nivelBeta--;
+		if (nivelBeta > -niveisBeta+1) nivelBeta--;
 		break;
 	case 'a':case 'A':
 		nivelAlpha--;
@@ -160,10 +182,10 @@ void keyPressed(unsigned char key, int x, int y) {
 		nivelAlpha++;
 		break;
 	case 'z':case 'Z':
-		camDistance += 0.5;
+		camDistance += 5;
 		break;
 	case 'x':case'X':
-		camDistance -= 0.5;
+		camDistance -= 5;
 		break;
 	}
 	glutPostRedisplay();
@@ -185,69 +207,111 @@ void menuHandler(int id_op) {
 	glutPostRedisplay();
 }
 
-int countModels(int count, TiXmlElement* elem) {
+/*
+	Conta número de modelos existentes no ficheiro .xml
+*/
+int countModels(int count, TiXmlElement* group) {
 	int n = 0;
-	for (elem; elem; elem = elem->NextSiblingElement()) {
-		TiXmlElement* model = elem->FirstChildElement("models")->FirstChildElement("model");
+	for (group; group; group= group->NextSiblingElement()) {
+		TiXmlElement* model = group->FirstChildElement("models")->FirstChildElement("model");
 		for (model; model; model = model->NextSiblingElement()) {
 			n++;
 		}
-		TiXmlElement* group = elem->FirstChildElement("group");
-		for (group; group; group = group->NextSiblingElement()) {
-			n += countModels(n, group);
+		TiXmlElement* group_rec = group->FirstChildElement("group");
+		for (group_rec; group_rec; group_rec = group_rec->NextSiblingElement()) {
+			n += countModels(n, group_rec);
 		}
 	}
 	return n;
 }
 
-void prepareScene(TiXmlHandle doc, string doc_path) {
-	TiXmlElement* elem = doc.FirstChild("scene").FirstChild("group").ToElement();
-	if (!elem) return;
-	int numModelos = countModels(0,elem);
-	string fileName;
-	ifstream inFile;
-	for (elem; elem; elem = elem->NextSiblingElement()) {
-		TiXmlElement* translacoes = elem->FirstChildElement("translate");
-		float tx, ty, tz;
-		if (translacoes) {
-			tx = atof(translacoes->Attribute("X"));
-			ty = atof(translacoes->Attribute("Y"));
-			tz = atof(translacoes->Attribute("Z"));
-		}
-		TiXmlElement* rotacoes = elem->FirstChildElement("rotate");
+/*
+	Carrega todos os modelos existentes num grupo para 'buffers', 
+	associando a cada um as transformações respetivas, guardando-as no 'vector<Transformacao> transformacoes'
+	Continua, recursivamente, para todos os subgrupos.
+*/
+void prepareGroup(TiXmlElement* group, Transformacao t) {
+	for (group; group; group=group->NextSiblingElement()) {
+		TiXmlElement* rotacoes = group->FirstChildElement("rotate");
 		vector<Rotacao> vectorR;
-		for (rotacoes; rotacoes; rotacoes = rotacoes->NextSiblingElement()) {
-			float angle, ax, ay, az;
-			if (rotacoes) {
-				angle = atof(translacoes->Attribute("angle"));
-				ax = atof(translacoes->Attribute("axisX"));
-				ay = atof(translacoes->Attribute("axisY"));
-				az = atof(translacoes->Attribute("axisZ"));
-			}
+		for (rotacoes; rotacoes; rotacoes=rotacoes->NextSiblingElement("rotate")) {
+			float angle = 0.0f, ax = 0.0f, ay = 0.0f, az = 0.0f;
+			const char* str_angle = rotacoes->Attribute("angle");
+			if (str_angle) angle = atof(str_angle);
+			const char* str_ax = rotacoes->Attribute("axisX");
+			if (str_ax) ax = atof(str_ax);
+			const char* str_ay = rotacoes->Attribute("axisY");
+			if (str_ay) ay = atof(str_ay);
+			const char* str_az = rotacoes->Attribute("axisZ");
+			if (str_az) az = atof(str_az);
+
 			Rotacao rotacao(angle, ax, ay, az);
 			vectorR.push_back(rotacao);
 		}
-
-		float sx = 1;
-		float sy = 1;
-		float sz = 1;
-		/*
-		 *	Escala?
-		 */
-		
+		TiXmlElement* translacoes = group->FirstChildElement("translate");
+		float tx = 0.0f, ty = 0.0f, tz = 0.0f;
+		if (translacoes) {
+			const char* str_tx = translacoes->Attribute("X");
+			if (str_tx) tx = atof(str_tx);
+			const char* str_ty = translacoes->Attribute("Y");
+			if (str_ty) ty = atof(str_ty);
+			const char* str_tz = translacoes->Attribute("Z");
+			if (str_tz) tz = atof(str_tz);
+		}
+		TiXmlElement* escalas = group->FirstChildElement("scale");
+		float sx = 1.0f, sy = 1.0f, sz = 1.0f;
+		if (escalas) {
+			const char* str_sx = escalas->Attribute("X");
+			if (str_sx) sx = atof(str_sx);
+			const char* str_sy = escalas->Attribute("Y");
+			if (str_sy) sy = atof(str_sy);
+			const char* str_sz = escalas->Attribute("Z");
+			if (str_sz) sz = atof(str_sz);
+		}
 		Transformacao transformacao(vectorR, tx, ty, tz, sx, sy, sz);
-		fileName = elem->Attribute("file");
-		fileName.insert(0, doc_path);
-		/*inFile = ifstream(fileName);
-		int pontosFicheiro;
-		if (inFile >> pontosFicheiro) {
-			for (int i = 0; i < pontosFicheiro; i++) {
-				inFile >> x >> y >> z;
-				Ponto p(x, y, z);
-				pontos.push_back(p);
+		vectorR.clear();
+		transformacao.merge(t);
+		TiXmlElement* model = group->FirstChildElement("models")->FirstChildElement("model");
+		for (model; model; model=model->NextSiblingElement()) {
+			string fileName = model->Attribute("file");
+			fileName.insert(0, xmlPath);
+			ifstream inFile(fileName);
+			int pontosFicheiro;
+			if (inFile >> pontosFicheiro) {
+				float* coordenadas = (float*)malloc(sizeof(float)*pontosFicheiro * 3);
+				for (int i = 0; i < pontosFicheiro*3; i++) {
+					inFile >> coordenadas[i];
+				}
+				int indice = transformacoes.size();
+				transformacoes.push_back(transformacao);
+				numVertices[indice] = pontosFicheiro;
+				glBindBuffer(GL_ARRAY_BUFFER, buffers[indice]);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pontosFicheiro*3 , coordenadas, GL_STATIC_DRAW);
+				free(coordenadas);
 			}
-		}*/
+		}
+		TiXmlElement* group_rec = group->FirstChildElement("group");
+		for (group_rec; group_rec; group_rec = group_rec->NextSiblingElement()) {
+			prepareGroup(group_rec, transformacao);
+		}
 	}
+}
+
+/*
+	Lê o ficheiro .xml, e guarda todos os modelos e respetivas transformações em memória
+*/
+void prepareScene(TiXmlHandle doc) {
+	TiXmlElement* group = doc.FirstChild("scene").FirstChild("group").ToElement();
+	if (!group) return;
+
+	numModelos = countModels(0, group);
+	buffers = (GLuint*)malloc(sizeof(GLuint)*numModelos);
+	glGenBuffers(numModelos, buffers);
+	numVertices = (int*)malloc(sizeof(int)*numModelos);
+
+	Transformacao transformacao = Transformacao();
+	prepareGroup(group, transformacao);
+
 }
 
 int main(int argc, char **argv) {
@@ -268,12 +332,8 @@ int main(int argc, char **argv) {
 	string str(argv[1]);
 	int indice = str.find_last_of("/\\");
 	if (indice == -1) indice = 0;
-	else indice++;
-	string xmlFolder = str.substr(0, indice);
-
-	TiXmlHandle docHandle(&doc);
-
-	prepareScene(docHandle, xmlFolder);
+		else indice++;
+	xmlPath = str.substr(0, indice);
 
 	// init GLUT and the window
 	glutInit(&argc, argv);
@@ -282,12 +342,13 @@ int main(int argc, char **argv) {
 	glutInitWindowSize(800, 800);
 	glutCreateWindow("3D Engine");
 
+	//init glew
+	glewInit();
 
 	// Required callback registry
 	glutKeyboardFunc(keyPressed);
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
-
 
 	// put here the definition of the menu 
 	glutCreateMenu(menuHandler);
@@ -296,10 +357,14 @@ int main(int argc, char **argv) {
 	glutAddMenuEntry("Point", 3);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
-
 	//  OpenGL settings
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	// Ler xml e preparar cena
+	TiXmlHandle docHandle(&doc);
+	prepareScene(docHandle);
 
 	// enter GLUT's main cycle
 	glutMainLoop();

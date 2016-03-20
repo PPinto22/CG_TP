@@ -73,6 +73,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\toolkits\includes;$(IncludePath)</IncludePath>
     <LibraryPath>C:\toolkits\libs;$(LibraryPath)</LibraryPath>
+    <ReferencePath>C:\toolkits\dlls;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

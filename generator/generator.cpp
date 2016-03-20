@@ -199,7 +199,8 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 int main(int argc, char *argv[]) {
 
 	if (argc <= 2) {
-		cout << "Indique a primitiva (plane,box,sphere,cone) e o ficheiro de sa�da\n";
+		cout << "Indique a primitiva (plane,box,sphere,cone) e o ficheiro de saida\n";
+		return 1;
 	}
 	else if (strcmp(argv[1], "plane") == 0) {
 		if (argc == 4) {
