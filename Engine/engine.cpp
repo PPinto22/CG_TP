@@ -75,10 +75,10 @@ public:
 	}
 };
 
-float camDistance = 50;
+float camDistance = 260;
 int nivelAlpha = 0, nivelBeta = 0;
-int niveisAlpha = 16;
-int niveisBeta = 16;
+int niveisAlpha = 50;
+int niveisBeta = 50;
 int draw_mode = 0; //0 = Fill, 1 = Line, 2 = Point
 
 GLuint* buffers;
@@ -182,10 +182,10 @@ void keyPressed(unsigned char key, int x, int y) {
 		nivelAlpha++;
 		break;
 	case 'z':case 'Z':
-		camDistance += 5;
+		camDistance += 4;
 		break;
 	case 'x':case'X':
-		camDistance -= 5;
+		camDistance -= 4;
 		break;
 	}
 	glutPostRedisplay();
