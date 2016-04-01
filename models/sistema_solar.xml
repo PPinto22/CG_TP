@@ -2,68 +2,68 @@
 	<group>
 		<scale X=20 Y=20 Z=20/>
 		<models>
-			<model file="sphere.3d"/>
+			<model file="sphere.3d"/>	<!-- Sol -->
 		</models>
 	</group>
 	<group>
 		<translate X=30/>
 		<models>
-			<model file="sphere.3d"/>
+			<model file="sphere.3d"/>	<!-- Mercurio -->
 		</models>
 	</group>
 	<group>
 		<translate X=35/>
 		<scale X=2 Y=2 Z=2/>
 		<models>
-			<model file="sphere.3d"/>
+			<model file="sphere.3d"/>	<!-- Venus -->
 		</models>
 	</group>
 	<group>
 		<translate X=40/>
 		<scale X=2 Y=2 Z=2/>
 		<models>
-			<model file="sphere.3d"/>
+			<model file="sphere.3d"/>	<!-- Terra -->
 		</models>
 		<group>
 			<translate X=2.5/>
 			<scale X=0.25 Y=0.25 Z=0.25/>
 			<models>
-				<model file="sphere.3d"/>
+				<model file="sphere.3d"/> <!-- Lua -->
 			</models>
 		</group>
 	</group>
 	<group>
 		<translate X=45/>
 		<models>
-			<model file="sphere.3d"/>
+			<model file="sphere.3d"/>	<!-- Marte -->
 		</models>
 	</group>
 	<group>
 		<translate X=60/>
 		<scale X=8 Y=8 Z=8/>
 		<models>
-			<model file="sphere.3d"/>
+			<model file="sphere.3d"/>	<!-- Jupiter -->
 		</models>
 	</group>
 	<group>
 		<translate X=80/>
 		<scale X=7 Y=7 Z=7/>
 		<models>
-			<model file="sphere.3d"/>
+			<model file="sphere.3d"/>	<!-- Saturno -->
 		</models>
 	</group>
 	<group>
 		<translate X=95/>
 		<scale X=4 Y=4 Z=4/>
 		<models>
-			<model file="sphere.3d"/>
+			<model file="sphere.3d"/>	<!-- Urano -->
 		</models>
 	</group>
 	<group>
 		<translate X=105/>
 		<scale X=4 Y=4 Z=4/>
 		<models>
-			<model file="sphere.3d"/>
+			<model file="sphere.3d"/>	<!-- Neptuno -->
 		</models>
 	</group>
 </scene>
