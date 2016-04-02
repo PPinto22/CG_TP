@@ -75,7 +75,7 @@ public:
 	}
 };
 
-float camDistance = 260;
+float camDistance = 300;
 int nivelAlpha = 0, nivelBeta = 0;
 int niveisAlpha = 50;
 int niveisBeta = 50;
@@ -291,9 +291,7 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 			}
 		}
 		TiXmlElement* group_rec = group->FirstChildElement("group");
-		for (group_rec; group_rec; group_rec = group_rec->NextSiblingElement()) {
-			prepareGroup(group_rec, transformacao);
-		}
+		prepareGroup(group_rec, transformacao);
 	}
 }
 
