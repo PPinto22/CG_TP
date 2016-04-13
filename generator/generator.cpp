@@ -29,6 +29,102 @@ public:
 
 };
 
+class Patch {
+private: int[] indices;
+		 Ponto[] pontos;
+
+public:
+	Patch(){
+		this->indices = new int[16];
+		this->pontos = new Ponto[16];
+	}
+	Patch(int[] ind){
+		this->indices = ind;
+		this->pontos = new Ponto[16];
+	}
+	int[] getIndices(){
+		return this.indices;
+	}
+	Ponto[] getPontos(){
+		return this->pontos;
+	}
+	int[] getIndices(){
+		return this->indices;
+	}
+	void setIndices(int[] ind){
+		this->indices = ind;
+	}
+	void preenche(vector<Ponto> pts){
+		for(int i = 0;i<16;i++){
+			this->pontos[i]=pts[indices[i]];
+		}
+	}
+};
+
+class PatchSet {
+private: vector<Patch> patches;
+		 vector<Ponto> pontos;
+public:
+	PatchSet(){
+		this->patches = new vector<Patch>();
+		this->pontos = new vector<Ponto>();
+	}
+	PatchSet(vector<Patch> p,vector<Ponto> pts){
+		this->patches = p;
+		this->pontos = pts;
+	}
+	vector<Patch> getPatches(){
+		return this.patches;
+	}
+	vector<Patch> getPontos(){
+		return this.pontos;
+	}
+	void setPatches(vector<Patch> p){
+		this.patches = p;
+	}
+	void setPontos(vector<Patch> p){
+		this.pontos = p;
+	}
+	void addPatch(Patch p){
+		this.patches.push_back(p);
+	}
+	void addPonto(Ponto p){
+		this.pontos.push_back(p);
+	}
+	void preenche(){
+		for(int i = 0;patches->size();i++){
+			patches[i]->preenche(pontos);
+		}
+	}
+
+
+};
+
+
+public:
+	Patch(vector<Ponto> p) {
+		this.pontos = p;
+	}
+
+	vector<Ponto> getPontos() {
+		return this.pontos;
+	}
+};
+
+bool hasEnding (std::string const &fullString, std::string const &ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
+void readBezier(string s,int i){
+	ifstream file;
+
+
+}
+
 string escreveTriangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3) {
 	string triangulo = floatToString(ponto1.x()) + " " + floatToString(ponto1.y()) + " " + floatToString(ponto1.z()) + "\n" +
 		floatToString(ponto2.x()) + " " + floatToString(ponto2.y()) + " " + floatToString(ponto2.z()) + "\n" +
@@ -195,13 +291,18 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 
 }
 
-
 int main(int argc, char *argv[]) {
 
 	if (argc <= 2) {
 		cout << "Indique a primitiva (plane,box,sphere,cone) e o ficheiro de saida\n";
 		return 1;
 	}
+
+	else if(hasEnding(argv[1],".patch")){
+			cout << "teste\n";
+			readBezier(argv[1],argv[2]);
+		}
+
 	else if (strcmp(argv[1], "plane") == 0) {
 		if (argc == 4) {
 			plane(atof(argv[2]), argv[3]);
@@ -244,4 +345,6 @@ int main(int argc, char *argv[]) {
 	}
 	cout << "Sucesso!\n";
 	return 1;
+
+
 }
