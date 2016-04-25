@@ -49,9 +49,3 @@ Temporary Items
 *.idb
 CG_TP.VC.opendb
 *.sdf
-*.opendb
-*.db
-*.obj
-*.log
-*.pdb
-*.suo

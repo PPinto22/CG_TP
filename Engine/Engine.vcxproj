@@ -77,8 +77,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\toolkits\includes;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\toolkits\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -147,11 +145,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Desktop\cg\tinyxml_2_6_2\tinystr.cpp" />
+    <ClCompile Include="..\..\..\..\..\Desktop\cg\tinyxml_2_6_2\tinyxml.cpp" />
+    <ClCompile Include="..\..\..\..\..\Desktop\cg\tinyxml_2_6_2\tinyxmlerror.cpp" />
+    <ClCompile Include="..\..\..\..\..\Desktop\cg\tinyxml_2_6_2\tinyxmlparser.cpp" />
     <ClCompile Include="engine.cpp" />
-    <ClCompile Include="tinystr.cpp" />
-    <ClCompile Include="tinyxml.cpp" />
-    <ClCompile Include="tinyxmlerror.cpp" />
-    <ClCompile Include="tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Desktop\cg\tinyxml_2_6_2\tinystr.h" />
