@@ -49,3 +49,9 @@ Temporary Items
 *.idb
 CG_TP.VC.opendb
 *.sdf
+*.suo
+*.db
+*.pdb
+*.obj
+*.opendb
+Engine/x64/Debug/Engine.log
