@@ -291,6 +291,23 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 
 }
 
+readBezier(int i,string s){
+	ifstream bucky;
+	bucky.open(s);
+
+	if(!bucky.is_open()){
+		exit(EXIT_FAILURE);
+	}
+
+	char word[50];
+	bucky >> word;
+
+	while(bucky.good()){
+		cout << word << " ";
+		bucky >> word;
+	}
+}
+
 int main(int argc, char *argv[]) {
 
 	if (argc <= 2) {
