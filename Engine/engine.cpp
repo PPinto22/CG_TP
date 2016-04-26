@@ -39,7 +39,10 @@ public:
 	float tempo, x, y, z;
 
 	Rotacao() {
-		tempo = x = y = z = 0;
+		tempo = 0.0f;
+		x = 0.0f;
+		y = 0.0f;
+		z = 0.0f;
 	}
 
 	Rotacao(float tempo, float x, float y, float z) {
@@ -47,6 +50,14 @@ public:
 		this->x = x;
 		this->y = y;
 		this->z = z;
+		this->normalizar();
+	}
+
+	void normalizar() {
+		float l = sqrt(x*x + y*y + z*z);
+		x = x / l;
+		y = y / l;
+		z = z / l;
 	}
 };
 
@@ -56,7 +67,7 @@ public:
 	vector<Ponto> pontos;
 
 	Translacao() {
-		this->tempo = 0;
+		this->tempo = 0.0f;
 		this->pontos = vector<Ponto>();
 	}
 
@@ -78,10 +89,9 @@ public:
 		this->sx = 1.0f; this->sy = 1.0f; this->sz = 1.0f;
 	}
 
-	Transformacao(Translacao translacao, float sx, float sy, float sz) {
-		this->rotacao = Rotacao();
+	Transformacao(Rotacao rotacao, float sx, float sy, float sz) {
+		this->rotacao = rotacao;
 		this->translacoes = vector<Translacao>();
-		this->translacoes.push_back(translacao);
 		this->sx = sx;
 		this->sy = sy;
 		this->sz = sz;
@@ -91,14 +101,6 @@ public:
 		this->rotacao = rotacao;
 		this->translacoes = vector<Translacao>();
 		this->translacoes.push_back(translacao);
-		this->sx = sx;
-		this->sy = sy;
-		this->sz = sz;
-	}
-
-	Transformacao(Rotacao rotacao, vector<Translacao> translacoes, float sx, float sy, float sz) {
-		this->rotacao = rotacao;
-		this->translacoes = translacoes;
 		this->sx = sx;
 		this->sy = sy;
 		this->sz = sz;
@@ -174,6 +176,7 @@ void renderScene(void) {
 	float z = camDistance * cos(beta) * cos(alpha);
 	float x = camDistance * cos(beta) * sin(alpha);
 	float y = camDistance * sin(beta);
+	int time;
 	gluLookAt(x, y, z,
 		0.0, 0.0, 0.0,
 		0.0f, 1.0f, 0.0f);
@@ -194,13 +197,25 @@ void renderScene(void) {
 	for (int i = 0; i < numModelos; i++) {
 		glPushMatrix();
 
-		/*Transformacao transformacao = transformacoes[i];
-		glTranslatef(transformacao.tx, transformacao.ty, transformacao.tz);
-		for (int j=0; j<transformacao.rotacoes.size(); j++) {
-		Rotacao rotacao = transformacao.rotacoes[j];
-		glRotatef(rotacao.angulo, rotacao.x, rotacao.y, rotacao.z);
+		Transformacao transformacao = transformacoes[i];
+		vector<Translacao> translacoes = transformacao.translacoes;
+		for (int i = 0; i < translacoes.size(); i++) {
+			Translacao translacao = translacoes[i];
+			
+// Falta por isto a funcionar direito. Funciona apenas para teste, e nao roda.
+			Ponto p1 = translacao.pontos[0];
+			glTranslatef(p1.x(), p1.y(), p1.z());
 		}
-		glScalef(transformacao.sx, transformacao.sy, transformacao.sz);*/
+
+		glScalef(transformacao.sx, transformacao.sy, transformacao.sz);
+
+		Rotacao rotacao = transformacao.rotacao;
+		if (rotacao.tempo > 0) {
+			int tempo_rotacao = rotacao.tempo * 1000;
+			time = glutGet(GLUT_ELAPSED_TIME) % tempo_rotacao;
+			float angulo = (float)time / tempo_rotacao * 360.0f;
+			glRotatef(angulo, rotacao.x, rotacao.y, rotacao.z);
+		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
 		glVertexPointer(3, GL_FLOAT, 0, 0);
@@ -257,7 +272,7 @@ void menuHandler(int id_op) {
 }
 
 /*
-Conta n�mero de modelos existentes no ficheiro .xml
+Conta numero de modelos existentes no ficheiro .xml
 */
 int countModels(int count, TiXmlElement* group) {
 	int n = 0;
@@ -276,48 +291,68 @@ int countModels(int count, TiXmlElement* group) {
 
 /*
 Carrega todos os modelos existentes num grupo para 'buffers',
-associando a cada um as transforma��es respetivas, guardando-as no 'vector<Transformacao> transformacoes'
+associando a cada um as transformacoes respetivas, guardando-as no 'vector<Transformacao> transformacoes'
 Continua, recursivamente, para todos os subgrupos.
 */
 void prepareGroup(TiXmlElement* group, Transformacao t) {
 	for (group; group; group = group->NextSiblingElement()) {
-		TiXmlElement* rotacoes = group->FirstChildElement("rotate");
+		TiXmlElement* elemRotacao = group->FirstChildElement("rotate");
 		Rotacao rotacao = Rotacao();
-		if (rotacoes) {
-			float angle = 0.0f, ax = 0.0f, ay = 0.0f, az = 0.0f;
-			const char* str_angle = rotacoes->Attribute("angle");
-			if (str_angle) angle = atof(str_angle);
-			const char* str_ax = rotacoes->Attribute("axisX");
+		if (elemRotacao) {
+			float time = 0.0f, ax = 0.0f, ay = 0.0f, az = 0.0f;
+			const char* str_time = elemRotacao->Attribute("time");
+			if (str_time) time = atof(str_time);
+			const char* str_ax = elemRotacao->Attribute("axisX");
 			if (str_ax) ax = atof(str_ax);
-			const char* str_ay = rotacoes->Attribute("axisY");
+			const char* str_ay = elemRotacao->Attribute("axisY");
 			if (str_ay) ay = atof(str_ay);
-			const char* str_az = rotacoes->Attribute("axisZ");
+			const char* str_az = elemRotacao->Attribute("axisZ");
 			if (str_az) az = atof(str_az);
 
-			rotacao = Rotacao(angle, ax, ay, az);
+			rotacao = Rotacao(time, ax, ay, az);
 		}
-		TiXmlElement* translacoes = group->FirstChildElement("translate");
-		float tx = 0.0f, ty = 0.0f, tz = 0.0f;
-		Translacao translacao = Translacao();
-		if (translacoes) {
-			const char* str_tx = translacoes->Attribute("X");
-			if (str_tx) tx = atof(str_tx);
-			const char* str_ty = translacoes->Attribute("Y");
-			if (str_ty) ty = atof(str_ty);
-			const char* str_tz = translacoes->Attribute("Z");
-			if (str_tz) tz = atof(str_tz);
+		TiXmlElement* elemTranslacao = group->FirstChildElement("translate");
+		bool translacao_OK = false;
+		int numPontosControlo = 0;
+		float time = 0;
+		vector<Ponto> pontos;
+		if (elemTranslacao) {
+			const char* str_time = elemTranslacao->Attribute("time");
+			if (str_time) time = atof(str_time);
+			TiXmlElement* elemPoint = elemTranslacao->FirstChildElement("point");
+			for (elemPoint; elemPoint; elemPoint = elemPoint->NextSiblingElement()) {
+				numPontosControlo++;
+				float px = 0, py = 0, pz = 0;
+				const char* str_x = elemPoint->Attribute("X");
+				if (str_x) px = atof(str_x);
+				const char* str_sy = elemPoint->Attribute("Y");
+				if (str_sy) py = atof(str_sy);
+				const char* str_sz = elemPoint->Attribute("Z");
+				if (str_sz) pz = atof(str_sz);
+				Ponto p(px, py, pz);
+				pontos.push_back(p);
+			}
 		}
-		TiXmlElement* escalas = group->FirstChildElement("scale");
+		if (numPontosControlo >= 4 && time > 0)
+			translacao_OK = true;
+		Translacao translacao(time, pontos);
+		TiXmlElement* elemScale = group->FirstChildElement("scale");
 		float sx = 1.0f, sy = 1.0f, sz = 1.0f;
-		if (escalas) {
-			const char* str_sx = escalas->Attribute("X");
+		if (elemScale) {
+			const char* str_sx = elemScale->Attribute("X");
 			if (str_sx) sx = atof(str_sx);
-			const char* str_sy = escalas->Attribute("Y");
+			const char* str_sy = elemScale->Attribute("Y");
 			if (str_sy) sy = atof(str_sy);
-			const char* str_sz = escalas->Attribute("Z");
+			const char* str_sz = elemScale->Attribute("Z");
 			if (str_sz) sz = atof(str_sz);
 		}
-		Transformacao transformacao(rotacao, translacao, sx, sy, sz);
+
+		Transformacao transformacao;
+		if(translacao_OK)
+			transformacao = Transformacao(rotacao, translacao, sx, sy, sz);
+		else
+			transformacao = Transformacao(rotacao, sx, sy, sz);
+
 		transformacao.merge(t);
 		TiXmlElement* model = group->FirstChildElement("models")->FirstChildElement("model");
 		for (model; model; model = model->NextSiblingElement()) {
@@ -394,6 +429,7 @@ int main(int argc, char **argv) {
 	// Required callback registry
 	glutKeyboardFunc(keyPressed);
 	glutDisplayFunc(renderScene);
+	glutIdleFunc(renderScene);
 	glutReshapeFunc(changeSize);
 
 	// put here the definition of the menu 

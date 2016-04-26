@@ -6,72 +6,15 @@
 		</models>
 	</group>
 	<group>
-		<translate X=30/>
+		<translate time = 10>
+			<point X=30 Y=0 Z=0 />
+			<point X=0 Y=0 Z=-30 />
+			<point X=-30 Y=0 Z=0 />
+			<point X=0 Y=0 Z=30 />
+		</translate>
+		<rotate time=5.55 axisX=1 axisY=0 axisZ=0 />
 		<models>
-			<model file="sphere.3d"/>	<!-- Mercurio -->
-		</models>
-	</group>
-	<group>
-		<translate X=35/>
-		<scale X=1.9 Y=1.9 Z=1.9/>
-		<models>
-			<model file="sphere.3d"/>	<!-- Venus -->
-		</models>
-	</group>
-	<group>
-		<translate X=41/>
-		<scale X=2 Y=2 Z=2/>
-		<models>
-			<model file="sphere.3d"/>	<!-- Terra -->
-		</models>
-		<group>
-			<translate X=3/>
-			<scale X=0.2 Y=0.2 Z=0.2/>
-			<models>
-				<model file="sphere.3d"/> <!-- Lua -->
-			</models>
-		</group>
-	</group>
-	<group>
-		<translate X=48/>
-		<scale X=1.2 Y=1.2 Z=1.2/>
-		<models>
-			<model file="sphere.3d"/>	<!-- Marte -->
-		</models>
-	</group>
-	<group>
-		<translate X=65/>
-		<scale X=8 Y=8 Z=8/>
-		<models>
-			<model file="sphere.3d"/>	<!-- Jupiter -->
-		</models>
-		<group>
-			<translate X=10/>
-			<scale X=0.1 Y=0.1 Z=0.1/>
-			<models>
-				<model file="sphere.3d"/>	<!-- Ganímedes -->
-			</models>
-		</group>
-	</group>
-	<group>
-		<translate X=88/>
-		<scale X=7 Y=7 Z=7/>
-		<models>
-			<model file="sphere.3d"/>	<!-- Saturno -->
-		</models>
-	</group>
-	<group>
-		<translate X=105/>
-		<scale X=4 Y=4 Z=4/>
-		<models>
-			<model file="sphere.3d"/>	<!-- Urano -->
-		</models>
-	</group>
-	<group>
-		<translate X=118/>
-		<scale X=4 Y=4 Z=4/>
-		<models>
-			<model file="sphere.3d"/>	<!-- Neptuno -->
+			<model file="cone.3d"/>	<!-- Mercurio -->
 		</models>
 	</group>
 </scene>
