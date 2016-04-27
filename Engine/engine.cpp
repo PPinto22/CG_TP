@@ -22,6 +22,11 @@ public:
 		yval = y;
 		zval = z;
 	}
+	Ponto(float* p) {
+		xval = p[0];
+		yval = p[1];
+		zval = p[2];
+	}
 	float x() { return xval; }
 	float y() { return yval; }
 	float z() { return zval; }
@@ -36,17 +41,18 @@ public:
 
 class Rotacao {
 public:
-	float tempo, x, y, z;
+	int tempo; //milisegundos
+	float x, y, z;
 
 	Rotacao() {
-		tempo = 0.0f;
+		tempo = 0;
 		x = 0.0f;
 		y = 0.0f;
 		z = 0.0f;
 	}
 
-	Rotacao(float tempo, float x, float y, float z) {
-		this->tempo = tempo;
+	Rotacao(float segundos, float x, float y, float z) {
+		this->tempo = (int) (segundos*1000);
 		this->x = x;
 		this->y = y;
 		this->z = z;
@@ -63,17 +69,72 @@ public:
 
 class Translacao {
 public:
-	float tempo;
+	int tempo; //milisegundos
 	vector<Ponto> pontos;
 
 	Translacao() {
-		this->tempo = 0.0f;
+		this->tempo = 0;
 		this->pontos = vector<Ponto>();
 	}
 
-	Translacao(float tempo, vector<Ponto> pontos) {
-		this->tempo = tempo;
+	Translacao(float segundos, vector<Ponto> pontos) {
+		this->tempo = (int) (segundos*1000);
 		this->pontos = pontos;
+	}
+
+	// given  global t, returns the point in the curve
+	Ponto getPoint(int milisegundos) {
+		float gt = (float)(milisegundos % this->tempo) / this->tempo;
+		float t = gt * pontos.size(); // this is the real global t
+		int index = floor(t);  // which segment
+		t = t - index; // where within  the segment
+
+		int indices[4];
+		indices[0] = (index + pontos.size() - 1) % pontos.size();
+		indices[1] = (indices[0] + 1) % pontos.size();
+		indices[2] = (indices[1] + 1) % pontos.size();
+		indices[3] = (indices[2] + 1) % pontos.size();
+
+		return getCatmullRomPoint(t, indices);
+	}
+
+private:
+	//Catmull-rom matrix
+	float M[4][4] = { { -0.5f,  1.5f, -1.5f,  0.5f },
+					  { 1.0f, -2.5f,  2.0f, -0.5f  },
+					  { -0.5f,  0.0f,  0.5f,  0.0f },
+					  { 0.0f,  1.0f,  0.0f,  0.0f  } };
+
+	Ponto getCatmullRomPoint(float t, int* indices) {
+
+		float T[1][4] =  { { pow(t,3),pow(t,2),t,1.0f  } };
+
+		float res[3];
+		res[0] = 0.0; res[1] = 0.0; res[2] = 0.0;
+
+		float P[4][3];
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 3; j++) {
+				P[i][j] = pontos[indices[i]].toArray()[j];
+			}
+		}
+
+		//Calcular T*M
+		float TM[1][4] = { { 0.0,0.0,0.0,0.0 } };
+		for (int j = 0; j < 4; j++) {
+			for (int k = 0; k < 4; k++) {
+				TM[0][j] += T[0][k] * M[k][j];
+			}
+		}
+
+		//Calcular T*M*P
+		for (int xyz = 0; xyz < 3; xyz++) {
+			for (int i = 0; i < 4; i++) {
+				res[xyz] += TM[0][i] * P[i][xyz];
+			}
+		}
+
+		return Ponto(res);
 	}
 };
 
@@ -201,17 +262,16 @@ void renderScene(void) {
 		vector<Translacao> translacoes = transformacao.translacoes;
 		for (int i = 0; i < translacoes.size(); i++) {
 			Translacao translacao = translacoes[i];
-			
-// Falta por isto a funcionar direito. Funciona apenas para teste, e nao roda.
-			Ponto p1 = translacao.pontos[0];
-			glTranslatef(p1.x(), p1.y(), p1.z());
+			Ponto p = translacao.getPoint(glutGet(GLUT_ELAPSED_TIME));
+			//printf("%f %f %f\n", p.x(), p.y(), p.z());
+			glTranslatef(p.x(), p.y(), p.z());
 		}
 
 		glScalef(transformacao.sx, transformacao.sy, transformacao.sz);
 
 		Rotacao rotacao = transformacao.rotacao;
-		if (rotacao.tempo > 0) {
-			int tempo_rotacao = rotacao.tempo * 1000;
+		int tempo_rotacao = rotacao.tempo;
+		if (tempo_rotacao > 0) {
 			time = glutGet(GLUT_ELAPSED_TIME) % tempo_rotacao;
 			float angulo = (float)time / tempo_rotacao * 360.0f;
 			glRotatef(angulo, rotacao.x, rotacao.y, rotacao.z);

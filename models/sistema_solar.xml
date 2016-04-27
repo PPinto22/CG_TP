@@ -7,14 +7,28 @@
 	</group>
 	<group>
 		<translate time = 10>
-			<point X=30 Y=0 Z=0 />
-			<point X=0 Y=0 Z=-30 />
-			<point X=-30 Y=0 Z=0 />
-			<point X=0 Y=0 Z=30 />
+			<point X=50 Y=0 Z=0 />
+			<point X=0 Y=0 Z=-50 />
+			<point X=-50 Y=0 Z=0 />
+			<point X=0 Y=0 Z=50 />
 		</translate>
+		<scale X=5 Y=5 Z=5/>
 		<rotate time=5.55 axisX=1 axisY=0 axisZ=0 />
 		<models>
-			<model file="cone.3d"/>	<!-- Mercurio -->
+			<model file="cone.3d"/>
 		</models>
+		<group>
+			<translate time = 5>
+				<point X=10 Y=0 Z=0 />
+				<point X=0 Y=0 Z=-10 />
+				<point X=-10 Y=0 Z=0 />
+				<point X=0 Y=0 Z=10 />
+			</translate>
+			<scale X=0.5 Y=0.5 Z=0.5/>
+			<rotate time=2 axisX=0 axisY=1 axisZ=0/>
+			<models>
+				<model file="sphere.3d"/>
+			</models>
+		</group>
 	</group>
 </scene>
