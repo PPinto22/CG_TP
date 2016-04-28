@@ -263,7 +263,6 @@ void renderScene(void) {
 		for (int i = 0; i < translacoes.size(); i++) {
 			Translacao translacao = translacoes[i];
 			Ponto p = translacao.getPoint(glutGet(GLUT_ELAPSED_TIME));
-			//printf("%f %f %f\n", p.x(), p.y(), p.z());
 			glTranslatef(p.x(), p.y(), p.z());
 		}
 
@@ -408,7 +407,7 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 		}
 
 		Transformacao transformacao;
-		if(translacao_OK)
+		if (translacao_OK)
 			transformacao = Transformacao(rotacao, translacao, sx, sy, sz);
 		else
 			transformacao = Transformacao(rotacao, sx, sy, sz);
