@@ -1,5 +1,6 @@
 <scene>
 	<group>
+		<scale X=100 Y=100 Z=100/>
 		<models>
 			<model file="teapot.3d"/>
 		</models>
