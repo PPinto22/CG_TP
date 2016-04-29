@@ -259,6 +259,10 @@ void renderScene(void) {
 		glPushMatrix();
 
 		Transformacao transformacao = transformacoes[i];
+
+		Rotacao rotacao = transformacao.rotacao;
+		int tempo_rotacao = rotacao.tempo;
+
 		vector<Translacao> translacoes = transformacao.translacoes;
 		for (int i = 0; i < translacoes.size(); i++) {
 			Translacao translacao = translacoes[i];
@@ -266,15 +270,13 @@ void renderScene(void) {
 			glTranslatef(p.x(), p.y(), p.z());
 		}
 
-		glScalef(transformacao.sx, transformacao.sy, transformacao.sz);
-
-		Rotacao rotacao = transformacao.rotacao;
-		int tempo_rotacao = rotacao.tempo;
 		if (tempo_rotacao > 0) {
 			time = glutGet(GLUT_ELAPSED_TIME) % tempo_rotacao;
 			float angulo = (float)time / tempo_rotacao * 360.0f;
 			glRotatef(angulo, rotacao.x, rotacao.y, rotacao.z);
 		}
+
+		glScalef(transformacao.sx, transformacao.sy, transformacao.sz);
 
 		glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
 		glVertexPointer(3, GL_FLOAT, 0, 0);

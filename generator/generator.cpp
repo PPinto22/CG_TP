@@ -1,146 +1,14 @@
 #define _USE_MATH_DEFINES
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
 #include <math.h>
 #include <vector>
-
-using namespace std;
-
-string floatToString(float number) {
-	ostringstream buff;
-	buff << number;
-	return buff.str();
-}
-
-class Ponto {
-private: float xval, yval, zval;
-
-public:
-	Ponto(float x, float y, float z) {
-		xval = x;
-		yval = y;
-		zval = z;
-	}
-	float x() { return xval; }
-	float y() { return yval; }
-	float z() { return zval; }
-
-};
-
-class Patch {
-private: int[] indices;
-		 Ponto[] pontos;
-
-public:
-	Patch(){
-		this->indices = new int[16];
-		this->pontos = new Ponto[16];
-	}
-	Patch(int[] ind){
-		this->indices = ind;
-		this->pontos = new Ponto[16];
-	}
-	int[] getIndices(){
-		return this.indices;
-	}
-	Ponto[] getPontos(){
-		return this->pontos;
-	}
-	int[] getIndices(){
-		return this->indices;
-	}
-	void setIndices(int[] ind){
-		this->indices = ind;
-	}
-	void preenche(vector<Ponto> pts){
-		for(int i = 0;i<16;i++){
-			this->pontos[i]=pts[indices[i]];
-		}
-	}
-};
-
-class PatchSet {
-private: vector<Patch> patches;
-		 vector<Ponto> pontos;
-public:
-	PatchSet(){
-		this->patches = new vector<Patch>();
-		this->pontos = new vector<Ponto>();
-	}
-	PatchSet(vector<Patch> p,vector<Ponto> pts){
-		this->patches = p;
-		this->pontos = pts;
-	}
-	vector<Patch> getPatches(){
-		return this.patches;
-	}
-	vector<Patch> getPontos(){
-		return this.pontos;
-	}
-	void setPatches(vector<Patch> p){
-		this.patches = p;
-	}
-	void setPontos(vector<Patch> p){
-		this.pontos = p;
-	}
-	void addPatch(Patch p){
-		this.patches.push_back(p);
-	}
-	void addPonto(Ponto p){
-		this.pontos.push_back(p);
-	}
-	void preenche(){
-		for(int i = 0;patches->size();i++){
-			patches[i]->preenche(pontos);
-		}
-	}
-
-
-};
-
-
-public:
-	Patch(vector<Ponto> p) {
-		this.pontos = p;
-	}
-
-	vector<Ponto> getPontos() {
-		return this.pontos;
-	}
-};
-
-bool hasEnding (std::string const &fullString, std::string const &ending) {
-    if (fullString.length() >= ending.length()) {
-        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
-    } else {
-        return false;
-    }
-}
-
-void readBezier(string s,int i){
-	ifstream file;
-
-
-}
-
-string escreveTriangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3) {
-	string triangulo = floatToString(ponto1.x()) + " " + floatToString(ponto1.y()) + " " + floatToString(ponto1.z()) + "\n" +
-		floatToString(ponto2.x()) + " " + floatToString(ponto2.y()) + " " + floatToString(ponto2.z()) + "\n" +
-		floatToString(ponto3.x()) + " " + floatToString(ponto3.y()) + " " + floatToString(ponto3.z());
-	return triangulo;
-}
-
-string escreveRectangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3, Ponto ponto4) {
-	string rectangulo = floatToString(ponto1.x()) + " " + floatToString(ponto1.y()) + " " + floatToString(ponto1.z()) + "\n" +
-		floatToString(ponto2.x()) + " " + floatToString(ponto2.y()) + " " + floatToString(ponto2.z()) + "\n" +
-		floatToString(ponto3.x()) + " " + floatToString(ponto3.y()) + " " + floatToString(ponto3.z()) + "\n" +
-		floatToString(ponto3.x()) + " " + floatToString(ponto3.y()) + " " + floatToString(ponto3.z()) + "\n" +
-		floatToString(ponto4.x()) + " " + floatToString(ponto4.y()) + " " + floatToString(ponto4.z()) + "\n" +
-		floatToString(ponto1.x()) + " " + floatToString(ponto1.y()) + " " + floatToString(ponto1.z());
-	return rectangulo;
-}
+#include "funcAux.h"
+#include "MatrizPontos.h"
+#include "patch.h"
+#include "patchSet.h"
 
 
 void plane(float lado, string ficheiro) {
@@ -291,35 +159,117 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 
 }
 
-readBezier(int i,string s){
-	ifstream bucky;
-	bucky.open(s);
 
-	if(!bucky.is_open()){
-		exit(EXIT_FAILURE);
-	}
+PatchSet readBezier(string ficheiro){
+	Patch p;
+	PatchSet ps = PatchSet();
 
-	char word[50];
-	bucky >> word;
+	char c;
+	int count = 0,numPatches,numPontos,n;
+	string line,line1,line2,s;
+	ifstream myReadFile;
+	
+	myReadFile.open(ficheiro);
+	if(myReadFile.is_open())
+    {
+    	getline(myReadFile,line1);
+    	numPatches = atoi(line1.c_str());
+    	
+    	for(int i = 0;i<numPatches;i++){
+            getline(myReadFile,line);
+            s = removeVirgulas(line);
+           	int* patch = (int*)malloc(sizeof(int)*16);
+            stringstream stream(s);
+			while(stream>>n){
+				stream.clear();
+				if(stream){
+				patch[count] = n;
+				count++;
+				}
+				
+			}
+			count = 0;
+			
+			p = Patch(patch);
+			ps.addPatch(p);
+		}
+		
+		getline(myReadFile,line2);
+		numPontos = atoi(line2.c_str());
 
-	while(bucky.good()){
-		cout << word << " ";
-		bucky >> word;
+		for(int i = 0;i<numPontos;i++){
+            getline(myReadFile,line);
+            s = removeVirgulas(line);
+
+           	stringstream stream(s);
+
+           	Ponto pt = Ponto();
+			float coord;
+			count = 0;
+			while(stream>>coord){
+				if (count == 0){
+					pt.setX(coord);
+				}
+				if (count == 1){
+					pt.setY(coord);
+				}
+				if (count == 2){
+					pt.setZ(coord);
+				}
+				count++;
+			}
+			count = 0;
+			ps.addPonto(pt);
+		}
+
+    }
+    myReadFile.close();
+
+    return ps;
+}
+
+void bezier(string input,int tesselation, string output){
+	ofstream outfile(output);
+	PatchSet ps = readBezier(input);
+
+	vector<Ponto> pontos = ps.getPontos();
+	
+	vector<Patch> patches = ps.getPatches();
+	
+
+	outfile << 3*tesselation*3*tesselation*6*ps.nrPatches() << endl;
+	for(int i = 0;i<ps.nrPatches();i++){
+
+		patches[i].preenche(pontos);
+
+		Ponto* pts = patches[i].getVertices(tesselation);
+		
+		for(int j = 0;j<(3*tesselation)*(3*tesselation)*6;j+=3){
+			outfile << pts[j].x() << " " << pts[j].y() << " " << pts[j].z() << endl;
+			outfile << pts[j+1].x() << " " << pts[j+1].y() << " " << pts[j+1].z() << endl;
+			outfile << pts[j+2].x() << " " << pts[j+2].y() << " " << pts[j+2].z() << endl;
+		}
 	}
 }
+
+
 
 int main(int argc, char *argv[]) {
 
 	if (argc <= 2) {
-		cout << "Indique a primitiva (plane,box,sphere,cone) e o ficheiro de saida\n";
+		cout << "Indique a primitiva (plane,box,sphere,cone), ou ficheiro .patch com o numero de tesselation desejado e o nome do ficheiro de saída.\n";
 		return 1;
 	}
 
 	else if(hasEnding(argv[1],".patch")){
-			cout << "teste\n";
-			readBezier(argv[1],argv[2]);
+		if (argc == 4){
+			bezier(argv[1],atoi(argv[2]),argv[3]);
 		}
-
+		else{
+			cout << "Indicou mal os argumentos\n";
+			return 1;
+		}
+	}
 	else if (strcmp(argv[1], "plane") == 0) {
 		if (argc == 4) {
 			plane(atof(argv[2]), argv[3]);
@@ -362,6 +312,5 @@ int main(int argc, char *argv[]) {
 	}
 	cout << "Sucesso!\n";
 	return 1;
-
 
 }

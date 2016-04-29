@@ -71,7 +71,7 @@
 		</models>
 	</group>
 	<group>	<!-- Jupiter -->
-		<translate time=215>
+		<translate time=70>
 			<point X=80  Y=0 Z=0   />
 			<point X=0   Y=0 Z=-80 />
 			<point X=-80 Y=0 Z=0   />
@@ -97,7 +97,7 @@
 		</group>
 	</group>
 	<group>	<!-- Saturno -->
-		<translate time=320>
+		<translate time=80>
 			<point X=100  Y=0 Z=0   />
 			<point X=0   Y=0 Z=-100 />
 			<point X=-100 Y=0 Z=0   />
@@ -110,7 +110,7 @@
 		</models>
 	</group>
 	<group>	<!-- Urano -->
-		<translate time=450>
+		<translate time=90>
 			<point X=116  Y=0 Z=0    />
 			<point X=0    Y=0 Z=-116 />
 			<point X=-116 Y=0 Z=0    />
@@ -123,7 +123,7 @@
 		</models>
 	</group>
 	<group>	<!-- Neptuno -->
-		<translate time=560>
+		<translate time=100>
 			<point X=132  Y=0 Z=0    />
 			<point X=0    Y=0 Z=-132 />
 			<point X=-132 Y=0 Z=0    />
@@ -133,6 +133,18 @@
 		<scale X=4 Y=4 Z=4/>
 		<models>
 			<model file="sphere.3d"/>
+		</models>
+	</group>
+	<group>	<!-- Cometa -->
+		<translate time=30>
+			<point X=100  Y=0     Z=-100 />
+			<point X=0    Y=70   Z=0    />
+			<point X=-100 Y=0     Z=100  />
+			<point X=0    Y=-70  Z=0    />
+		</translate>
+		<scale X=0.5 Y=0.5 Z=0.5/>
+		<models>
+			<model file="teapot.3d"/>
 		</models>
 	</group>
 </scene>

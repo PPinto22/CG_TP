@@ -1,8 +1,0 @@
-<scene>
-	<group>
-		<scale X=5 Y=5 Z=5/>
-		<models>
-			<model file="teapot.3d"/>
-		</models>
-	</group>
-</scene>
