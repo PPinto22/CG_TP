@@ -137,12 +137,11 @@
 	</group>
 	<group>	<!-- Cometa -->
 		<translate time=30>
-			<point X=100  Y=0     Z=-100 />
-			<point X=0    Y=70   Z=0    />
-			<point X=-100 Y=0     Z=100  />
-			<point X=0    Y=-70  Z=0    />
+			<point X=90  Y=0     Z=-90 />
+			<point X=0    Y=65   Z=0    />
+			<point X=-90 Y=0     Z=90  />
+			<point X=0    Y=-65  Z=0    />
 		</translate>
-		<scale X=0.5 Y=0.5 Z=0.5/>
 		<models>
 			<model file="teapot.3d"/>
 		</models>
