@@ -1,8 +1,6 @@
 #ifndef _FUNCAUX_
 #define _FUNCAUX_
 
-#include "ponto.h"
-
 using namespace std;
 
 string floatToString(float number) {

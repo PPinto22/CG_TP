@@ -4,280 +4,24 @@
 #include <stdlib.h>
 #include <GL/glew.h>
 #include <GL/glut.h>
-#include <tinyxml.h>
+#include "tinyxml.h"
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <vector>
-#pragma comment(lib,"glew32.lib")
 
 using namespace std;
+#include "ponto.h"
+#include "rotacao.h"
+#include "translacao.h"
+#include "transformacao.h"
+#pragma comment(lib,"glew32.lib")
 
-class Ponto {
-private: float xval, yval, zval;
+float camX = 0, camY, camZ = 300;
+int startX, startY, tracking = 0;
 
-public:
-	Ponto(float x, float y, float z) {
-		xval = x;
-		yval = y;
-		zval = z;
-	}
-	Ponto(float* p) {
-		xval = p[0];
-		yval = p[1];
-		zval = p[2];
-	}
-	float x() { return xval; }
-	float y() { return yval; }
-	float z() { return zval; }
-	float* toArray() {
-		float pontos[3];
-		pontos[0] = xval;
-		pontos[1] = yval;
-		pontos[2] = zval;
-		return pontos;
-	}
-};
+int alpha = 0, beta = 0, r = 300;
 
-class Rotacao {
-public:
-	int tempo; //milisegundos
-	float x, y, z;
-
-	Rotacao() {
-		tempo = 0;
-		x = 0.0f;
-		y = 0.0f;
-		z = 0.0f;
-	}
-
-	Rotacao(float segundos, float x, float y, float z) {
-		this->tempo = (int) (segundos*1000);
-		this->x = x;
-		this->y = y;
-		this->z = z;
-		this->normalizar();
-	}
-
-	void normalizar() {
-		float l = sqrt(x*x + y*y + z*z);
-		x = x / l;
-		y = y / l;
-		z = z / l;
-	}
-};
-
-class Translacao {
-public:
-	int tempo; //milisegundos
-	vector<Ponto> pontos;
-	float up[3] = { 0.0f, 1.0f, 0.0f };
-
-	Translacao() {
-		this->tempo = 0;
-		this->pontos = vector<Ponto>();
-	}
-
-	Translacao(float segundos, vector<Ponto> pontos) {
-		this->tempo = (int) (segundos*1000);
-		this->pontos = pontos;
-	}
-
-	// given  global t, returns the point in the curve
-	Ponto getPoint(int milisegundos) {
-		float gt = (float)(milisegundos % this->tempo) / this->tempo;
-		float t = gt * pontos.size(); // this is the real global t
-		int index = floor(t);  // which segment
-		t = t - index; // where within  the segment
-
-		int indices[4];
-		indices[0] = (index + pontos.size() - 1) % pontos.size();
-		indices[1] = (indices[0] + 1) % pontos.size();
-		indices[2] = (indices[1] + 1) % pontos.size();
-		indices[3] = (indices[2] + 1) % pontos.size();
-
-		return getCatmullRomPoint(t, indices);
-	}
-
-	float* getRotMatrix(int milisegundos) {
-		float left[3];
-		float* m = (float*)malloc(16*sizeof(float));
-		float gt = (float)(milisegundos % this->tempo) / this->tempo;
-		float t = gt * pontos.size(); // this is the real global t
-		int index = floor(t);  // which segment
-		t = t - index; // where within  the segment
-
-		int indices[4];
-		indices[0] = (index + pontos.size() - 1) % pontos.size();
-		indices[1] = (indices[0] + 1) % pontos.size();
-		indices[2] = (indices[1] + 1) % pontos.size();
-		indices[3] = (indices[2] + 1) % pontos.size();
-
-		float* dir = getCatmullRomDirection(t, indices); normalize(dir);
-		cross(up, dir, left); normalize(left);
-		cross(dir, left, up); normalize(up);
-
-		buildRotMatrix(dir, up, left, m);
-		free(dir);
-
-		return m;
-	}
-
-private:
-	//Catmull-rom matrix
-	float M[4][4] = { { -0.5f,  1.5f, -1.5f,  0.5f },
-					  { 1.0f, -2.5f,  2.0f, -0.5f  },
-					  { -0.5f,  0.0f,  0.5f,  0.0f },
-					  { 0.0f,  1.0f,  0.0f,  0.0f  } };
-
-	void buildRotMatrix(float *x, float *y, float *z, float *m) {
-		m[0] = x[0];
-		m[1] = x[1];
-		m[2] = x[2];
-		m[3] = 0.0f;
-		m[4] = y[0];
-		m[5] = y[1];
-		m[6] = y[2];
-		m[7] = 0.0f;
-		m[8] = z[0];
-		m[9] = z[1];
-		m[10] = z[2];
-		m[11] = 0.0f;
-		m[12] = 0.0f;
-		m[13] = 0.0f;
-		m[14] = 0.0f;
-		m[15] = 1.0f;
-	}
-
-	void cross(float *a, float *b, float *res) {
-		res[0] = a[1] * b[2] - a[2] * b[1]; res[1] = a[2] * b[0] - a[0] * b[2]; res[2] = a[0] * b[1] - a[1] * b[0];
-	}
-
-	void normalize(float *a) {
-		float l = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
-		a[0] = a[0] / l;
-		a[1] = a[1] / l;
-		a[2] = a[2] / l;
-	}
-	
-	float* getCatmullRomDirection(float t, int* indices) {
-		float* dir = (float*)malloc(3 * sizeof(float));
-		dir[0] = 0.0f; dir[1] = 0.0f; dir[2] = 0.0f;
-
-
-		float Td[1][4] = { { 3 * pow(t,2), 2 * t, 1.0f, 0.0f } };
-
-		float P[4][3];
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 3; j++) {
-				P[i][j] = pontos[indices[i]].toArray()[j];
-			}
-		}
-
-		//Calcular Td*M
-		float TdM[1][4] = { { 0.0f,0.0f,0.0f,0.0f } };
-		for (int j = 0; j < 4; j++) {
-			for (int k = 0; k < 4; k++) {
-				TdM[0][j] += Td[0][k] * M[k][j];
-			}
-		}
-
-		//Calcular Td*M*P
-		for (int xyz = 0; xyz < 3; xyz++) {
-			for (int i = 0; i < 4; i++) {
-				dir[xyz] += TdM[0][i] * P[i][xyz];
-			}
-		}
-
-		return dir;
-	}
-
-	Ponto getCatmullRomPoint(float t, int* indices) {
-
-		float T[1][4] =  { { pow(t,3),pow(t,2),t,1.0f  } };
-
-		float res[3];
-		res[0] = 0.0; res[1] = 0.0; res[2] = 0.0;
-
-		float P[4][3];
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 3; j++) {
-				P[i][j] = pontos[indices[i]].toArray()[j];
-			}
-		}
-
-		//Calcular T*M
-		float TM[1][4] = { { 0.0,0.0,0.0,0.0 } };
-		for (int j = 0; j < 4; j++) {
-			for (int k = 0; k < 4; k++) {
-				TM[0][j] += T[0][k] * M[k][j];
-			}
-		}
-
-		//Calcular T*M*P
-		for (int xyz = 0; xyz < 3; xyz++) {
-			for (int i = 0; i < 4; i++) {
-				res[xyz] += TM[0][i] * P[i][xyz];
-			}
-		}
-
-		return Ponto(res);
-	}
-};
-
-class Transformacao {
-public:
-	Rotacao rotacao;
-	vector<Translacao> translacoes;
-	float sx, sy, sz;
-
-	Transformacao() {
-		this->rotacao = Rotacao();
-		this->translacoes = vector<Translacao>();
-		this->sx = 1.0f; this->sy = 1.0f; this->sz = 1.0f;
-	}
-
-	Transformacao(Rotacao rotacao, float sx, float sy, float sz) {
-		this->rotacao = rotacao;
-		this->translacoes = vector<Translacao>();
-		this->sx = sx;
-		this->sy = sy;
-		this->sz = sz;
-	}
-
-	Transformacao(Rotacao rotacao, Translacao translacao, float sx, float sy, float sz) {
-		this->rotacao = rotacao;
-		this->translacoes = vector<Translacao>();
-		this->translacoes.push_back(translacao);
-		this->sx = sx;
-		this->sy = sy;
-		this->sz = sz;
-	}
-
-	void merge(Transformacao t) {
-		// Mantem rotacao propria
-
-		// Multiplica escalas
-		this->sx *= t.sx; this->sy *= t.sy; this->sz *= t.sz;
-
-		// Adquire translacoes de 't' e 
-		// acrescenta as proprias no final
-		vector<Translacao> translacoesAux;
-		for (int i = 0; i < t.translacoes.size(); i++) {
-			translacoesAux.push_back(t.translacoes[i]);
-		}
-		for (int i = 0; i < this->translacoes.size(); i++) {
-			translacoesAux.push_back(this->translacoes[i]);
-		}
-		this->translacoes.clear();
-		this->translacoes = translacoesAux;
-	}
-};
-
-float camDistance = 300;
-int nivelAlpha = 0, nivelBeta = 0;
-int niveisAlpha = 50;
-int niveisBeta = 50;
 int draw_mode = 0; //0 = Fill, 1 = Line, 2 = Point
 
 GLuint* buffers;
@@ -314,18 +58,14 @@ void changeSize(int w, int h) {
 
 void renderScene(void) {
 
+	int time;
+
 	// clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// set the camera
 	glLoadIdentity();
-	float beta = nivelBeta * M_PI_2 / niveisBeta;
-	float alpha = nivelAlpha * M_PI / niveisAlpha;
-	float z = camDistance * cos(beta) * cos(alpha);
-	float x = camDistance * cos(beta) * sin(alpha);
-	float y = camDistance * sin(beta);
-	int time;
-	gluLookAt(x, y, z,
+	gluLookAt(camX, camY, camZ,
 		0.0, 0.0, 0.0,
 		0.0f, 1.0f, 0.0f);
 
@@ -383,32 +123,6 @@ void renderScene(void) {
 	glutSwapBuffers();
 }
 
-
-
-// write function to process keyboard events
-void keyPressed(unsigned char key, int x, int y) {
-	switch (key) {
-	case 'w':case 'W':
-		if (nivelBeta < niveisBeta - 1) nivelBeta++;
-		break;
-	case 's':case 'S':
-		if (nivelBeta > -niveisBeta + 1) nivelBeta--;
-		break;
-	case 'a':case 'A':
-		nivelAlpha--;
-		break;
-	case 'd':case 'D':
-		nivelAlpha++;
-		break;
-	case 'z':case 'Z':
-		camDistance += 4;
-		break;
-	case 'x':case'X':
-		camDistance -= 4;
-		break;
-	}
-	glutPostRedisplay();
-}
 
 // write function to process menu events
 void menuHandler(int id_op) {
@@ -550,6 +264,71 @@ void prepareScene(TiXmlHandle doc) {
 
 }
 
+void processMouseButtons(int button, int state, int xx, int yy)
+{
+	if (state == GLUT_DOWN) {
+		startX = xx;
+		startY = yy;
+		if (button == GLUT_LEFT_BUTTON)
+			tracking = 1;
+		else if (button == GLUT_RIGHT_BUTTON)
+			tracking = 2;
+		else
+			tracking = 0;
+	}
+	else if (state == GLUT_UP) {
+		if (tracking == 1) {
+			alpha += (xx - startX);
+			beta += (yy - startY);
+		}
+		else if (tracking == 2) {
+
+			r -= yy - startY;
+			if (r < 3)
+				r = 3.0;
+		}
+		tracking = 0;
+	}
+}
+
+
+void processMouseMotion(int xx, int yy)
+{
+	int deltaX, deltaY;
+	int alphaAux, betaAux;
+	int rAux;
+
+	if (!tracking)
+		return;
+
+	deltaX = xx - startX;
+	deltaY = yy - startY;
+
+	if (tracking == 1) {
+
+		alphaAux = alpha + deltaX;
+		betaAux = beta + deltaY;
+
+		if (betaAux > 85.0)
+			betaAux = 85.0;
+		else if (betaAux < -85.0)
+			betaAux = -85.0;
+
+		rAux = r;
+	}
+	else if (tracking == 2) {
+
+		alphaAux = alpha;
+		betaAux = beta;
+		rAux = r - deltaY;
+		if (rAux < 3)
+			rAux = 3;
+	}
+	camX = rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
+	camZ = rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
+	camY = rAux *							     sin(betaAux * 3.14 / 180.0);
+}
+
 int main(int argc, char **argv) {
 
 	if (argc < 2) {
@@ -582,17 +361,18 @@ int main(int argc, char **argv) {
 	glewInit();
 
 	// Required callback registry
-	glutKeyboardFunc(keyPressed);
 	glutDisplayFunc(renderScene);
 	glutIdleFunc(renderScene);
 	glutReshapeFunc(changeSize);
+	glutMouseFunc(processMouseButtons);
+	glutMotionFunc(processMouseMotion);
 
 	// put here the definition of the menu 
 	glutCreateMenu(menuHandler);
 	glutAddMenuEntry("Fill", 1);
 	glutAddMenuEntry("Line", 2);
 	glutAddMenuEntry("Point", 3);
-	glutAttachMenu(GLUT_RIGHT_BUTTON);
+	glutAttachMenu(GLUT_MIDDLE_BUTTON);
 
 	//  OpenGL settings
 	glEnable(GL_DEPTH_TEST);

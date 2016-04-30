@@ -1,8 +1,6 @@
 #ifndef _MATRIZPONTOS_
 #define _MATRIZPONTOS_
 
-#include "ponto.h"
-
 class MatrizPontos {
 private: Ponto** matriz;
 		 int linhas;

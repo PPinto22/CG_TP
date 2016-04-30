@@ -5,6 +5,7 @@
 #include <string>
 #include <math.h>
 #include <vector>
+#include "ponto.h"
 #include "funcAux.h"
 #include "MatrizPontos.h"
 #include "patch.h"
