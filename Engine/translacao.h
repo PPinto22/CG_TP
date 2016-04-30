@@ -16,13 +16,28 @@ public:
 		this->tempo = (int) (segundos*1000);
 		this->pontos = pontos;
 	}
-
+	
 	// given  global t, returns the point in the curve
+	Ponto getPoint(float gt) {
+
+	float t = gt * pontos.size(); // this is the real global t
+	int index = floor(t);  // which segment
+	t = t - index; // where within  the segment
+
+	int indices[4];
+	indices[0] = (index + pontos.size() - 1) % pontos.size();
+	indices[1] = (indices[0] + 1) % pontos.size();
+	indices[2] = (indices[1] + 1) % pontos.size();
+	indices[3] = (indices[2] + 1) % pontos.size();
+
+	return getCatmullRomPoint(t, indices);
+}
+
 	Ponto getPoint(int milisegundos) {
 		float gt = (float)(milisegundos % this->tempo) / this->tempo;
-		float t = gt * pontos.size(); // this is the real global t
-		int index = floor(t);  // which segment
-		t = t - index; // where within  the segment
+		float t = gt * pontos.size();
+		int index = floor(t);
+		t = t - index;
 
 		int indices[4];
 		indices[0] = (index + pontos.size() - 1) % pontos.size();

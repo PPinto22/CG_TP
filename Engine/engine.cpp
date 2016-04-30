@@ -94,6 +94,14 @@ void renderScene(void) {
 		for (int i = 0; i < translacoes.size(); i++) {
 			time = glutGet(GLUT_ELAPSED_TIME);
 			Translacao translacao = translacoes[i];
+
+			glBegin(GL_LINE_LOOP);
+			for (int i = 0; i < 100*3; i++) {
+				Ponto linha = translacao.getPoint(i/100.0f);
+				glVertex3f(linha.x(), linha.y(), linha.z());
+			}
+			glEnd();
+
 			Ponto p = translacao.getPoint(time);
 			glTranslatef(p.x(), p.y(), p.z());
 
