@@ -17,7 +17,9 @@ using namespace std;
 #include "transformacao.h"
 #pragma comment(lib,"glew32.lib")
 
-float camX = 0, camY, camZ = 300;
+#define PONTOS_LINHA_ORBITA 1000
+
+float camX = 0, camY = 0, camZ = 300;
 int startX, startY, tracking = 0;
 
 int alpha = 0, beta = 0, r = 300;
@@ -55,6 +57,10 @@ void changeSize(int w, int h) {
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
 }
+
+int timebase = 0;
+int frame = 0;
+float fps;
 
 void renderScene(void) {
 
@@ -95,12 +101,9 @@ void renderScene(void) {
 			time = glutGet(GLUT_ELAPSED_TIME);
 			Translacao translacao = translacoes[i];
 
-			glBegin(GL_LINE_LOOP);
-			for (int i = 0; i < 100*3; i++) {
-				Ponto linha = translacao.getPoint(i/100.0f);
-				glVertex3f(linha.x(), linha.y(), linha.z());
-			}
-			glEnd();
+			glBindBuffer(GL_ARRAY_BUFFER, translacao.orbita);
+			glVertexPointer(3, GL_FLOAT, 0, 0);
+			glDrawArrays(GL_LINE_LOOP, 0, PONTOS_LINHA_ORBITA);
 
 			Ponto p = translacao.getPoint(time);
 			glTranslatef(p.x(), p.y(), p.z());
@@ -126,6 +129,19 @@ void renderScene(void) {
 
 		glPopMatrix();
 	}
+
+	//Calcular fps
+	frame++;
+	time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - timebase > 1000) {
+		fps = frame*1000.0 / (time - timebase);
+		timebase = time;
+		frame = 0;
+	}
+
+	char* fps_string = (char*)malloc(8 * sizeof(char));
+	sprintf(fps_string, "%.0f fps", fps);
+	glutSetWindowTitle(fps_string);
 
 	// End of frame
 	glutSwapBuffers();
@@ -225,8 +241,10 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 		}
 
 		Transformacao transformacao;
-		if (translacao_OK)
+		if (translacao_OK) {
+			translacao.gerarLinhaOrbita(PONTOS_LINHA_ORBITA);
 			transformacao = Transformacao(rotacao, translacao, sx, sy, sz);
+		}
 		else
 			transformacao = Transformacao(rotacao, sx, sy, sz);
 

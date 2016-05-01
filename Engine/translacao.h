@@ -6,6 +6,7 @@ public:
 	int tempo; //milisegundos
 	vector<Ponto> pontos;
 	float up[3] = { 0.0f, 1.0f, 0.0f };
+	GLuint orbita;
 
 	Translacao() {
 		this->tempo = 0;
@@ -16,22 +17,36 @@ public:
 		this->tempo = (int) (segundos*1000);
 		this->pontos = pontos;
 	}
+
+	void gerarLinhaOrbita(int n) {
+		float* buffer = (float*)malloc(n * 3 * sizeof(float));
+		for (int i = 0; i < n ; i++) {
+			float gt = (float)i / n;
+			Ponto p = this->getPoint(gt);
+			buffer[i * 3 + 0] = p.x();
+			buffer[i * 3 + 1] = p.y();
+			buffer[i * 3 + 2] = p.z();
+		}
+		glGenBuffers(1, &orbita);
+		glBindBuffer(GL_ARRAY_BUFFER, this->orbita);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)* n * 3, buffer, GL_STATIC_DRAW);
+		free(buffer);
+	}
 	
 	// given  global t, returns the point in the curve
 	Ponto getPoint(float gt) {
+		float t = gt * pontos.size(); // this is the real global t
+		int index = floor(t);  // which segment
+		t = t - index; // where within  the segment
 
-	float t = gt * pontos.size(); // this is the real global t
-	int index = floor(t);  // which segment
-	t = t - index; // where within  the segment
+		int indices[4];
+		indices[0] = (index + pontos.size() - 1) % pontos.size();
+		indices[1] = (indices[0] + 1) % pontos.size();
+		indices[2] = (indices[1] + 1) % pontos.size();
+		indices[3] = (indices[2] + 1) % pontos.size();
 
-	int indices[4];
-	indices[0] = (index + pontos.size() - 1) % pontos.size();
-	indices[1] = (indices[0] + 1) % pontos.size();
-	indices[2] = (indices[1] + 1) % pontos.size();
-	indices[3] = (indices[2] + 1) % pontos.size();
-
-	return getCatmullRomPoint(t, indices);
-}
+		return getCatmullRomPoint(t, indices);
+	}
 
 	Ponto getPoint(int milisegundos) {
 		float gt = (float)(milisegundos % this->tempo) / this->tempo;
