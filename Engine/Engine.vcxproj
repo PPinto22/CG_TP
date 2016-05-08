@@ -154,8 +154,10 @@
     <ClCompile Include="tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Desktop\cg\tinyxml_2_6_2\tinystr.h" />
-    <ClInclude Include="..\..\..\..\..\Desktop\cg\tinyxml_2_6_2\tinyxml.h" />
+    <ClInclude Include="ponto.h" />
+    <ClInclude Include="rotacao.h" />
+    <ClInclude Include="transformacao.h" />
+    <ClInclude Include="translacao.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

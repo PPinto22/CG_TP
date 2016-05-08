@@ -57,3 +57,5 @@ CG_TP.VC.opendb
 Engine/x64/Debug/Engine.log
 *.vcxproj
 *.log
+*.ilk
+*.exe

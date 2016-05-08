@@ -1,5 +1,8 @@
+using namespace std;
+
 #ifndef _PONTO_
 #define _PONTO_
+
 
 class Ponto {
 private: float xval, yval, zval;
@@ -37,8 +40,10 @@ public:
 		this->yval += pt.y();
 		this->zval += pt.z();
 	}
-	void toString(){
-		printf("X = %f, Y = %f, Z = %f;\n",this->xval,this->yval,this->zval);
+
+	string toString(){
+		string sponto = to_string(xval) + " " + to_string(yval) + " " + to_string(zval);
+		return sponto;
 	}
 
 };

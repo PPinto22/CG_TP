@@ -36,11 +36,6 @@ public:
 			patches[i].preenche(pontos);
 		}
 	}
-	void toString(){
-		for(int i = 0;i<this->pontos.size(); i++){
-			pontos[i].toString();
-		}
-	}
 	int nrPatches(){
 		return this->patches.size();
 	}

@@ -37,5 +37,17 @@
     <ClInclude Include="..\..\..\..\..\Desktop\cg\tinyxml_2_6_2\tinystr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ponto.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rotacao.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="transformacao.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="translacao.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

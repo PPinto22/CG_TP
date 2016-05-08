@@ -21,6 +21,13 @@
   <ItemGroup>
     <ClCompile Include="generator.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="funcAux.h" />
+    <ClInclude Include="MatrizPontos.h" />
+    <ClInclude Include="patch.h" />
+    <ClInclude Include="patchSet.h" />
+    <ClInclude Include="ponto.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4DA8DF89-86B4-471E-905A-8649DD8C091C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

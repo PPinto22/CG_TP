@@ -19,4 +19,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="patchSet.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ponto.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="funcAux.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrizPontos.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="patch.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
