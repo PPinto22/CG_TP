@@ -59,3 +59,5 @@ Engine/x64/Debug/Engine.log
 *.log
 *.ilk
 *.exe
+generator/generator.vcxproj.user
+generator/generator.vcxproj.user

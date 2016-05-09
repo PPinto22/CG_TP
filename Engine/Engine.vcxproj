@@ -154,6 +154,7 @@
     <ClCompile Include="tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="luz.h" />
     <ClInclude Include="ponto.h" />
     <ClInclude Include="rotacao.h" />
     <ClInclude Include="transformacao.h" />

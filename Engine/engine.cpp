@@ -15,6 +15,7 @@ using namespace std;
 #include "rotacao.h"
 #include "translacao.h"
 #include "transformacao.h"
+#include "luz.h"
 #pragma comment(lib,"glew32.lib")
 
 #define PONTOS_LINHA_ORBITA 1000
@@ -27,9 +28,12 @@ int alpha = 0, beta = 0, r = 300;
 int draw_mode = 0; //0 = Fill, 1 = Line, 2 = Point
 
 GLuint* buffers;
+GLuint* normals;
+GLuint* textures;
 int *numVertices;
 int numModelos;
 vector<Transformacao> transformacoes;
+vector<Luz> luzes;
 
 string xmlPath;
 
@@ -74,6 +78,36 @@ void renderScene(void) {
 	gluLookAt(camX, camY, camZ,
 		0.0, 0.0, 0.0,
 		0.0f, 1.0f, 0.0f);
+
+	for (int i = 0; i < luzes.size(); i++) {
+		switch (i) {
+		case 0:
+			glLightfv(GL_LIGHT0, GL_POSITION, luzes[i].pos);
+			break;
+		case 1:
+			glLightfv(GL_LIGHT1, GL_POSITION, luzes[i].pos);
+			break;
+		case 2:
+			glLightfv(GL_LIGHT2, GL_POSITION, luzes[i].pos);
+			break;
+		case 3:
+			glLightfv(GL_LIGHT3, GL_POSITION, luzes[i].pos);
+			break;
+		case 4:
+			glLightfv(GL_LIGHT4, GL_POSITION, luzes[i].pos);
+			break;
+		case 5:
+			glLightfv(GL_LIGHT5, GL_POSITION, luzes[i].pos);
+			break;
+		case 6:
+			glLightfv(GL_LIGHT6, GL_POSITION, luzes[i].pos);
+			break;
+		case 7:
+			glLightfv(GL_LIGHT7, GL_POSITION, luzes[i].pos);
+			break;
+		}
+	}
+	
 
 	// Drawing Mode
 	switch (draw_mode) {
@@ -183,8 +217,8 @@ int countModels(int count, TiXmlElement* group) {
 }
 
 /*
-Carrega todos os modelos existentes num grupo para 'buffers',
-associando a cada um as transformacoes respetivas, guardando-as no 'vector<Transformacao> transformacoes'
+Carrega todos os modelos existentes num grupo, associando
+a cada um as transformacoes respetivas, guardando-as no 'vector<Transformacao> transformacoes'
 Continua, recursivamente, para todos os subgrupos.
 */
 void prepareGroup(TiXmlElement* group, Transformacao t) {
@@ -257,12 +291,19 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 			int pontosFicheiro;
 			if (inFile >> pontosFicheiro) {
 				float* coordenadas = (float*)malloc(sizeof(float)*pontosFicheiro * 3);
-				for (int i = 0; i < pontosFicheiro * 3; i++) {
-					inFile >> coordenadas[i];
+				float* coordenadas_normais = (float*)malloc(sizeof(float)*pontosFicheiro * 3);
+
+				for (int i = 0; i < pontosFicheiro; i++) {
+					int j = i * 3;
+					inFile >> coordenadas[j] >> coordenadas[j + 1] >> coordenadas[j + 2];
+					inFile >> coordenadas_normais[j] >> coordenadas_normais[j + 1] >> coordenadas_normais[j + 2];
 				}
+
 				int indice = transformacoes.size();
 				transformacoes.push_back(transformacao);
 				numVertices[indice] = pontosFicheiro;
+				glBindBuffer(GL_ARRAY_BUFFER, normals[indice]);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pontosFicheiro * 3, coordenadas_normais, GL_STATIC_DRAW);
 				glBindBuffer(GL_ARRAY_BUFFER, buffers[indice]);
 				glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pontosFicheiro * 3, coordenadas, GL_STATIC_DRAW);
 				free(coordenadas);
@@ -273,16 +314,112 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 	}
 }
 
+void prepareLights(TiXmlElement* lights) {
+	if (!lights) return;
+
+	glEnable(GL_LIGHTING);
+
+	TiXmlElement* luz = lights->FirstChildElement("light");
+	for (int i = 0; luz && i<8 ; luz = luz->NextSiblingElement(), i++) {
+		float type = 1.0;
+		float posX = 0.0, posY = 0.0, posZ = 0.0;
+		float ambR = 0.2, ambG = 0.2, ambB = 0.2;
+		float diffR = 1.0, diffG = 1.0, diffB = 1.0;
+
+		const char* str_type = luz->Attribute("type");
+		if (str_type) {
+			if (strcmp(str_type, "POINT") == 0)
+				type = 1.0;
+			else if (strcmp(str_type, "VECTOR") == 0)
+				type = 0.0;
+		}
+
+		const char* str_posX = luz->Attribute("posX");
+		if (str_posX) posX = atof(str_posX);
+		const char* str_posY = luz->Attribute("posY");
+		if (str_posY) posY = atof(str_posY);
+		const char* str_posZ = luz->Attribute("posZ");
+		if (str_posZ) posZ = atof(str_posZ);
+
+		const char* str_ambR = luz->Attribute("ambR");
+		if (str_ambR) ambR = atof(str_ambR);
+		const char* str_ambG = luz->Attribute("ambG");
+		if (str_ambG) ambG = atof(str_ambG);
+		const char* str_ambB = luz->Attribute("ambB");
+		if (str_ambB) ambB = atof(str_ambB);
+
+		const char* str_diffR = luz->Attribute("diffR");
+		if (str_diffR) diffR = atof(str_diffR);
+		const char* str_diffG = luz->Attribute("diffG");
+		if (str_diffG) diffG = atof(str_diffG);
+		const char* str_diffB = luz->Attribute("diffB");
+		if (str_diffB) diffB = atof(str_diffB);
+
+		Luz l(type,posX, posY, posZ, ambR, ambG, ambB, diffR, diffG, diffB);
+
+		switch (i) {
+		case 0:
+			glEnable(GL_LIGHT0);
+			glLightfv(GL_LIGHT0, GL_AMBIENT, l.amb);
+			glLightfv(GL_LIGHT0, GL_DIFFUSE, l.diff);
+			break;
+		case 1:
+			glEnable(GL_LIGHT1);
+			glLightfv(GL_LIGHT1, GL_AMBIENT, l.amb);
+			glLightfv(GL_LIGHT1, GL_DIFFUSE, l.diff);
+			break;
+		case 2:
+			glEnable(GL_LIGHT2);
+			glLightfv(GL_LIGHT2, GL_AMBIENT, l.amb);
+			glLightfv(GL_LIGHT2, GL_DIFFUSE, l.diff);
+			break;
+		case 3:
+			glEnable(GL_LIGHT3);
+			glLightfv(GL_LIGHT3, GL_AMBIENT, l.amb);
+			glLightfv(GL_LIGHT3, GL_DIFFUSE, l.diff);
+			break;
+		case 4:
+			glEnable(GL_LIGHT4);
+			glLightfv(GL_LIGHT4, GL_AMBIENT, l.amb);
+			glLightfv(GL_LIGHT4, GL_DIFFUSE, l.diff);
+			break;
+		case 5:
+			glEnable(GL_LIGHT5);
+			glLightfv(GL_LIGHT5, GL_AMBIENT, l.amb);
+			glLightfv(GL_LIGHT5, GL_DIFFUSE, l.diff);
+			break;
+		case 6:
+			glEnable(GL_LIGHT6);
+			glLightfv(GL_LIGHT6, GL_AMBIENT, l.amb);
+			glLightfv(GL_LIGHT6, GL_DIFFUSE, l.diff);
+			break;
+		case 7:
+			glEnable(GL_LIGHT7);
+			glLightfv(GL_LIGHT7, GL_AMBIENT, l.amb);
+			glLightfv(GL_LIGHT0, GL_DIFFUSE, l.diff);
+			break;
+		}
+	}
+}
+
 /*
 Le o ficheiro .xml, e guarda todos os modelos e respetivas transformacoes em memoria
 */
 void prepareScene(TiXmlHandle doc) {
-	TiXmlElement* group = doc.FirstChild("scene").FirstChild("group").ToElement();
+	TiXmlElement* scene = doc.FirstChild("scene").ToElement();
+	TiXmlElement* group = scene->FirstChildElement("group");
 	if (!group) return;
+
+	TiXmlElement* lights = scene->FirstChildElement("lights");
+	prepareLights(lights);
 
 	numModelos = countModels(0, group);
 	buffers = (GLuint*)malloc(sizeof(GLuint)*numModelos);
 	glGenBuffers(numModelos, buffers);
+	normals = (GLuint*)malloc(sizeof(GLuint)*numModelos);
+	glGenBuffers(numModelos, normals);
+	textures = (GLuint*)malloc(sizeof(GLuint)*numModelos);
+	glGenBuffers(numModelos, textures);
 	numVertices = (int*)malloc(sizeof(int)*numModelos);
 
 	Transformacao transformacao = Transformacao();
@@ -404,6 +541,7 @@ int main(int argc, char **argv) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnableClientState(GL_VERTEX_ARRAY);
+	// ? glEnableClientState(GL_NORMAL_ARRAY); ?
 
 	// Ler xml e preparar cena
 	TiXmlHandle docHandle(&doc);

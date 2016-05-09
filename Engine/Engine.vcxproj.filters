@@ -31,12 +31,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Desktop\cg\tinyxml_2_6_2\tinyxml.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Desktop\cg\tinyxml_2_6_2\tinystr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ponto.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -47,6 +41,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="translacao.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luz.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
