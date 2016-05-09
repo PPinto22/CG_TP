@@ -20,14 +20,14 @@ void plane(float lado, string ficheiro) {
 	Ponto pt2(coord, 0, -coord);
 	Ponto pt3(-coord, 0, -coord);
 	Ponto pt4(-coord, 0, coord);
-
+	Ponto normal(0.0,1.0,0.0);
 
 
 	ofstream outfile(ficheiro);
 
 	outfile << nVertices << endl;
-	outfile << escreveTriangulo(pt1, pt2, pt3) << endl;
-	outfile << escreveTriangulo(pt3, pt4, pt1);
+	outfile << escreveTriangulo(pt1, pt2, pt3, normal) << endl;
+	outfile << escreveTriangulo(pt3, pt4, pt1, normal);
 
 	outfile.close();
 }
@@ -50,12 +50,18 @@ void box(float x, float y, float z, string ficheiro) {
 	ofstream outfile(ficheiro);
 
 	outfile << nVertices << endl;
-	outfile << escreveRectangulo(pt4, pt3, pt2, pt1) << endl;
-	outfile << escreveRectangulo(pt5, pt6, pt7, pt8) << endl;
-	outfile << escreveRectangulo(pt1, pt5, pt8, pt4) << endl;
-	outfile << escreveRectangulo(pt3, pt7, pt6, pt2) << endl;
-	outfile << escreveRectangulo(pt4, pt8, pt7, pt3) << endl;
-	outfile << escreveRectangulo(pt2, pt6, pt5, pt1);
+	Ponto normal1(0,-1,0);
+	outfile << escreveRectangulo(pt4, pt3, pt2, pt1, normal1) << endl;
+	Ponto normal2(0,1,0);
+	outfile << escreveRectangulo(pt5, pt6, pt7, pt8, normal2) << endl;
+	Ponto normal3(1,0,0);
+	outfile << escreveRectangulo(pt1, pt5, pt8, pt4, normal3) << endl;
+	Ponto normal4(-1,0,0);
+	outfile << escreveRectangulo(pt3, pt7, pt6, pt2, normal4) << endl;
+	Ponto normal5(0,0,1);
+	outfile << escreveRectangulo(pt4, pt8, pt7, pt3, normal5) << endl;
+	Ponto normal6(0,0,-1);
+	outfile << escreveRectangulo(pt2, pt6, pt5, pt1, normal6);
 
 	outfile.close();
 }
@@ -93,14 +99,25 @@ void sphere(float radius, int slices, int stacks, string ficheiro) {
 		for(int slice = 0; slice<slices; slice++){
 			int slice_direita = (slice + 1)%slices;
 
-			outfile << pontos[stack][slice].toString() << endl;
-			outfile << pontos[stack+1][slice_direita].toString() << endl;
-			outfile << pontos[stack + 1][slice].toString() << endl;
+			Ponto p;
+			
+			p = pontos[stack][slice];
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
 
-			outfile << pontos[stack][slice].toString() << endl;
-			outfile << pontos[stack][slice_direita].toString() << endl;
-			outfile << pontos[stack+1][slice_direita].toString() << endl;
+			p = pontos[stack+1][slice_direita]; 
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
 
+			p = pontos[stack + 1][slice];
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
+
+			p = pontos[stack][slice];
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
+
+			p = pontos[stack][slice_direita];
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
+
+			p = pontos[stack + 1][slice_direita];
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
 		}
 	}
 	outfile.close();
@@ -138,21 +155,52 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 		for(int slice = 0; slice<slices; slice++){
 			int slice_direita = (slice + 1)%slices;
 
-			outfile << pontos[stack][slice].toString() << endl;
-			outfile << pontos[stack + 1][slice_direita].toString() << endl;
-			outfile << pontos[stack + 1][slice].toString() << endl;
-			outfile << pontos[stack][slice].toString() << endl;
-			outfile << pontos[stack][slice_direita].toString() << endl;
-			outfile << pontos[stack + 1][slice_direita].toString() << endl;
+				Ponto v1 = pontos[stack+1][slice].subtrai(pontos[stack][slice]);
+				Ponto v2 = pontos[stack][slice-1].subtrai(pontos[stack][slice]);
+				Ponto v = v1.cross(v2);
+				v.normalize();
+				
+				outfile << pontos[stack][slice].toString() << " " << v.toString() << endl;
+
+				v1 = pontos[stack+1+1][slice_direita].subtrai(pontos[stack+1][slice_direita]);
+				v2 = pontos[stack+1][slice_direita-1].subtrai(pontos[stack+1][slice_direita]);
+				v = v1.cross(v2);
+
+				outfile << pontos[stack + 1][slice_direita].toString() << " " << v.toString() << endl;
+
+				v1 = pontos[stack+1+1][slice].subtrai(pontos[stack+1][slice]);
+				v2 = pontos[stack][slice-1].subtrai(pontos[stack+1][slice]);
+				v = v1.cross(v2);
+
+				outfile << pontos[stack + 1][slice].toString() << " " << v.toString() << endl;
+
+				v1 = pontos[stack+1][slice].subtrai(pontos[stack][slice]);
+				v2 = pontos[stack][slice-1].subtrai(pontos[stack][slice]);
+				v = v1.cross(v2);
+
+				outfile << pontos[stack][slice].toString() << " " << v.toString() << endl;
+
+				v1 = pontos[stack+1][slice_direita].subtrai(pontos[stack][slice_direita]);
+				v2 = pontos[stack][slice_direita-1].subtrai(pontos[stack][slice_direita]);
+				v = v1.cross(v2);
+
+				outfile << pontos[stack][slice_direita].toString() << endl;
+
+				v1 = pontos[stack+1+1][slice_direita].subtrai(pontos[stack+1][slice_direita]);
+				v2 = pontos[stack+1][slice_direita-1].subtrai(pontos[stack+1][slice_direita]);
+				v = v1.cross(v2);
+
+				outfile << pontos[stack + 1][slice_direita].toString() << " " << v.toString() << endl;
+
 		}
 	}
 
 	//Escreve triangulos da base
 	for(int slice = 0; slice<slices; slice++){
 		int slice_direita=(slice+1)%slices;
-		outfile << pontos[0][slice].toString() << endl;
-		outfile << pBot.toString() << endl;
-		outfile << pontos[0][slice_direita].toString() << endl;
+		outfile << pontos[0][slice].toString() << " " << Ponto(0,-1,0).toString() << endl;
+		outfile << pBot.toString() << " " << Ponto(0,-1,0).toString() << endl;
+		outfile << pontos[0][slice_direita].toString() << " " << Ponto(0,-1,0).toString() << endl;
 	}
 
 	outfile.close();

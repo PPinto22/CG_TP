@@ -21,32 +21,25 @@ string removeVirgulas(string s){
 	return s;
 }
 
-string escreveTriangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3) {
-    string triangulo = ponto1.toString() + "\n" +
-					   ponto2.toString() + "\n" +
-					   ponto3.toString();
+string escreveTriangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3, Ponto normal) {
+    string triangulo = ponto1.toString() + " " + normal.toString() + "\n" +
+					   ponto2.toString() + " " + normal.toString() + "\n" +
+					   ponto3.toString() + " " + normal.toString();
     return triangulo;
 }
 
-string escreveRectangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3, Ponto ponto4) {
-    string rectangulo = ponto1.toString() + "\n" +
-						ponto2.toString() + "\n" +
-						ponto3.toString() + "\n" +
-						ponto3.toString() + "\n" +
-						ponto4.toString() + "\n" +
-						ponto1.toString();
+string escreveRectangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3, Ponto ponto4, Ponto normal) {
+    string rectangulo = ponto1.toString() + " " + normal.toString() + "\n" +
+						ponto2.toString() + " " + normal.toString() + "\n" +
+						ponto3.toString() + " " + normal.toString() + "\n" +
+						ponto3.toString() + " " + normal.toString() + "\n" +
+						ponto4.toString() + " " + normal.toString() + "\n" +
+						ponto1.toString() + " " + normal.toString();
     return rectangulo;
 }
 
-void cross(float *a, float *b, float *res) {
-	res[0] = a[1] * b[2] - a[2] * b[1]; res[1] = a[2] * b[0] - a[0] * b[2]; res[2] = a[0] * b[1] - a[1] * b[0];
-}
 
-void normalize(float *a) {
-	float l = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
-	a[0] = a[0] / l;
-	a[1] = a[1] / l;
-	a[2] = a[2] / l;
-}
+
+
 
 #endif
