@@ -80,32 +80,7 @@ void renderScene(void) {
 		0.0f, 1.0f, 0.0f);
 
 	for (int i = 0; i < luzes.size(); i++) {
-		switch (i) {
-		case 0:
-			glLightfv(GL_LIGHT0, GL_POSITION, luzes[i].pos);
-			break;
-		case 1:
-			glLightfv(GL_LIGHT1, GL_POSITION, luzes[i].pos);
-			break;
-		case 2:
-			glLightfv(GL_LIGHT2, GL_POSITION, luzes[i].pos);
-			break;
-		case 3:
-			glLightfv(GL_LIGHT3, GL_POSITION, luzes[i].pos);
-			break;
-		case 4:
-			glLightfv(GL_LIGHT4, GL_POSITION, luzes[i].pos);
-			break;
-		case 5:
-			glLightfv(GL_LIGHT5, GL_POSITION, luzes[i].pos);
-			break;
-		case 6:
-			glLightfv(GL_LIGHT6, GL_POSITION, luzes[i].pos);
-			break;
-		case 7:
-			glLightfv(GL_LIGHT7, GL_POSITION, luzes[i].pos);
-			break;
-		}
+		glLightfv(GL_LIGHT0+i, GL_POSITION, luzes[i].pos);
 	}
 	
 
@@ -357,48 +332,9 @@ void prepareLights(TiXmlElement* lights) {
 
 		Luz l(type,posX, posY, posZ, ambR, ambG, ambB, diffR, diffG, diffB);
 
-		switch (i) {
-		case 0:
-			glEnable(GL_LIGHT0);
-			glLightfv(GL_LIGHT0, GL_AMBIENT, l.amb);
-			glLightfv(GL_LIGHT0, GL_DIFFUSE, l.diff);
-			break;
-		case 1:
-			glEnable(GL_LIGHT1);
-			glLightfv(GL_LIGHT1, GL_AMBIENT, l.amb);
-			glLightfv(GL_LIGHT1, GL_DIFFUSE, l.diff);
-			break;
-		case 2:
-			glEnable(GL_LIGHT2);
-			glLightfv(GL_LIGHT2, GL_AMBIENT, l.amb);
-			glLightfv(GL_LIGHT2, GL_DIFFUSE, l.diff);
-			break;
-		case 3:
-			glEnable(GL_LIGHT3);
-			glLightfv(GL_LIGHT3, GL_AMBIENT, l.amb);
-			glLightfv(GL_LIGHT3, GL_DIFFUSE, l.diff);
-			break;
-		case 4:
-			glEnable(GL_LIGHT4);
-			glLightfv(GL_LIGHT4, GL_AMBIENT, l.amb);
-			glLightfv(GL_LIGHT4, GL_DIFFUSE, l.diff);
-			break;
-		case 5:
-			glEnable(GL_LIGHT5);
-			glLightfv(GL_LIGHT5, GL_AMBIENT, l.amb);
-			glLightfv(GL_LIGHT5, GL_DIFFUSE, l.diff);
-			break;
-		case 6:
-			glEnable(GL_LIGHT6);
-			glLightfv(GL_LIGHT6, GL_AMBIENT, l.amb);
-			glLightfv(GL_LIGHT6, GL_DIFFUSE, l.diff);
-			break;
-		case 7:
-			glEnable(GL_LIGHT7);
-			glLightfv(GL_LIGHT7, GL_AMBIENT, l.amb);
-			glLightfv(GL_LIGHT0, GL_DIFFUSE, l.diff);
-			break;
-		}
+		glEnable(GL_LIGHT0 + i);
+		glLightfv(GL_LIGHT0 + i, GL_AMBIENT, l.amb);
+		glLightfv(GL_LIGHT0 + i, GL_DIFFUSE, l.diff);
 	}
 }
 
