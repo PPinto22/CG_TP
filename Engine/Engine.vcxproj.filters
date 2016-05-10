@@ -46,5 +46,6 @@
     <ClInclude Include="luz.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="engine.h" />
   </ItemGroup>
 </Project>

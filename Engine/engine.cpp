@@ -110,9 +110,15 @@ void renderScene(void) {
 			time = glutGet(GLUT_ELAPSED_TIME);
 			Translacao translacao = translacoes[i];
 
+			for (int i = 0; i < luzes.size(); i++) {
+				glDisable(GL_LIGHT0 + i);
+			}
 			glBindBuffer(GL_ARRAY_BUFFER, translacao.orbita);
 			glVertexPointer(3, GL_FLOAT, 0, 0);
 			glDrawArrays(GL_LINE_LOOP, 0, PONTOS_LINHA_ORBITA);
+			for (int i = 0; i < luzes.size(); i++) {
+				glEnable(GL_LIGHT0 + i);
+			}
 
 			Ponto p = translacao.getPoint(time);
 			glTranslatef(p.x(), p.y(), p.z());
@@ -134,6 +140,9 @@ void renderScene(void) {
 
 		glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
 		glVertexPointer(3, GL_FLOAT, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, normals[1]);
+		glNormalPointer(GL_FLOAT, 0, 0);
+
 		glDrawArrays(GL_TRIANGLES, 0, numVertices[i]);
 
 		glPopMatrix();
@@ -332,6 +341,8 @@ void prepareLights(TiXmlElement* lights) {
 
 		Luz l(type,posX, posY, posZ, ambR, ambG, ambB, diffR, diffG, diffB);
 
+		luzes.push_back(l);
+
 		glEnable(GL_LIGHT0 + i);
 		glLightfv(GL_LIGHT0 + i, GL_AMBIENT, l.amb);
 		glLightfv(GL_LIGHT0 + i, GL_DIFFUSE, l.diff);
@@ -477,7 +488,7 @@ int main(int argc, char **argv) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnableClientState(GL_VERTEX_ARRAY);
-	// ? glEnableClientState(GL_NORMAL_ARRAY); ?
+	glEnableClientState(GL_NORMAL_ARRAY);
 
 	// Ler xml e preparar cena
 	TiXmlHandle docHandle(&doc);
