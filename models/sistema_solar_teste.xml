@@ -6,7 +6,7 @@
 		<scale X=20 Y=20 Z=20/>
 		<rotate time=25 axisX=0 axisY=1 axisZ=0 />
 		<models>
-			<model file="sphere.3d"/>
+			<model file="sphere.3d" emissR=255 emissG=50 emissB=0/>
 		</models>
 	</group>
 	<group> <!-- Mercurio -->

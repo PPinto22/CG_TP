@@ -16,6 +16,7 @@ using namespace std;
 #include "translacao.h"
 #include "transformacao.h"
 #include "luz.h"
+#include "material.h"
 #pragma comment(lib,"glew32.lib")
 
 #define PONTOS_LINHA_ORBITA 1000
@@ -29,7 +30,7 @@ int draw_mode = 0; //0 = Fill, 1 = Line, 2 = Point
 
 GLuint* buffers;
 GLuint* normals;
-GLuint* textures;
+vector<Material> materials;
 int *numVertices;
 int numModelos;
 vector<Transformacao> transformacoes;
@@ -110,19 +111,19 @@ void renderScene(void) {
 			time = glutGet(GLUT_ELAPSED_TIME);
 			Translacao translacao = translacoes[i];
 
-			for (int i = 0; i < luzes.size(); i++) {
-				glDisable(GL_LIGHT0 + i);
-			}
+			// Desenhar orbita
+			glDisable(GL_LIGHTING);
+			glColor3f(30.0/255.0, 30.0/255.0, 40.0 / 255.0);
 			glBindBuffer(GL_ARRAY_BUFFER, translacao.orbita);
 			glVertexPointer(3, GL_FLOAT, 0, 0);
 			glDrawArrays(GL_LINE_LOOP, 0, PONTOS_LINHA_ORBITA);
-			for (int i = 0; i < luzes.size(); i++) {
-				glEnable(GL_LIGHT0 + i);
-			}
+			glEnable(GL_LIGHTING);
 
+			// Translacao
 			Ponto p = translacao.getPoint(time);
 			glTranslatef(p.x(), p.y(), p.z());
 
+			// Rotacao pela orientacao da linha
 			if (tempo_rotacao <= 0) {
 				float* rot_matrix = translacao.getRotMatrix(time);
 				glMultMatrixf(rot_matrix);
@@ -130,14 +131,26 @@ void renderScene(void) {
 			}
 		}
 
+		// Rotacao explicita
 		if (tempo_rotacao > 0) {
 			time = glutGet(GLUT_ELAPSED_TIME) % tempo_rotacao;
 			float angulo = (float)time / tempo_rotacao * 360.0f;
 			glRotatef(angulo, rotacao.x, rotacao.y, rotacao.z);
 		}
 
+		// Escala
 		glScalef(transformacao.sx, transformacao.sy, transformacao.sz);
 
+		// Material
+		Material mat = materials[i];
+		if (mat.hasTexture) {
+			// TODO - glBind, etc...
+		}
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat.diff);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, mat.spec);
+		glMaterialfv(GL_FRONT, GL_EMISSION, mat.emiss);
+		glMaterialfv(GL_FRONT, GL_AMBIENT, mat.amb);
+		
 		glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
 		glVertexPointer(3, GL_FLOAT, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, normals[1]);
@@ -199,6 +212,53 @@ int countModels(int count, TiXmlElement* group) {
 	}
 	return n;
 }
+
+Material prepareMaterial(TiXmlElement* model) {
+	float diffR = 0.8, diffG = 0.8, diffB = 0.8;
+	float specR = 0.0, specG = 0.0, specB = 0.0f;
+	float emissR = 0.0, emissG = 0.0, emissB = 0.0f;
+	float ambR = 0.2, ambG = 0.2, ambB = 0.2;
+
+	const char* texture = model->Attribute("texture");
+	if (texture) {
+		string path(texture);
+		path.insert(0, xmlPath);
+		texture = path.c_str();
+	}
+
+	const char* str_diffR = model->Attribute("diffR");
+	if (str_diffR) diffR = atof(str_diffR) / 255.0f;
+	const char* str_diffG = model->Attribute("diffG");
+	if (str_diffG) diffG = atof(str_diffG) / 255.0f;
+	const char* str_diffB = model->Attribute("diffB");
+	if (str_diffB) diffB = atof(str_diffB) / 255.0f;
+
+	const char* str_specR = model->Attribute("specR");
+	if (str_specR) specR = atof(str_specR) / 255.0f;
+	const char* str_specG = model->Attribute("specG");
+	if (str_specG) specG = atof(str_specG) / 255.0f;
+	const char* str_specB = model->Attribute("specB");
+	if (str_specB) specB = atof(str_specB) / 255.0f;
+
+	const char* str_emissR = model->Attribute("emissR");
+	if (str_emissR) emissR = atof(str_emissR) / 255.0f;
+	const char* str_emissG = model->Attribute("emissG");
+	if (str_emissG) emissG = atof(str_emissG) / 255.0f;
+	const char* str_emissB = model->Attribute("emissB");
+	if (str_emissB) emissB = atof(str_emissB) / 255.0f;
+
+	const char* str_ambR = model->Attribute("ambR");
+	if (str_ambR) ambR = atof(str_ambR) / 255.0f;
+	const char* str_ambG = model->Attribute("ambG");
+	if (str_ambG) ambG = atof(str_ambG) / 255.0f;
+	const char* str_ambB = model->Attribute("ambB");
+	if (str_ambB) ambB = atof(str_ambB) / 255.0f;
+
+	Material m(texture, diffR, diffG, diffB, specR, specG, specB, emissR, emissG, emissB, ambR, ambG, ambB);
+
+	return m;
+}
+
 
 /*
 Carrega todos os modelos existentes num grupo, associando
@@ -286,6 +346,10 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 				int indice = transformacoes.size();
 				transformacoes.push_back(transformacao);
 				numVertices[indice] = pontosFicheiro;
+
+				Material mat = prepareMaterial(model);
+				materials.push_back(mat);
+
 				glBindBuffer(GL_ARRAY_BUFFER, normals[indice]);
 				glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pontosFicheiro * 3, coordenadas_normais, GL_STATIC_DRAW);
 				glBindBuffer(GL_ARRAY_BUFFER, buffers[indice]);
@@ -300,7 +364,6 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 
 void prepareLights(TiXmlElement* lights) {
 	if (!lights) return;
-
 	glEnable(GL_LIGHTING);
 
 	TiXmlElement* luz = lights->FirstChildElement("light");
@@ -326,18 +389,18 @@ void prepareLights(TiXmlElement* lights) {
 		if (str_posZ) posZ = atof(str_posZ);
 
 		const char* str_ambR = luz->Attribute("ambR");
-		if (str_ambR) ambR = atof(str_ambR);
+		if (str_ambR) ambR = atof(str_ambR)/255.0f;
 		const char* str_ambG = luz->Attribute("ambG");
-		if (str_ambG) ambG = atof(str_ambG);
+		if (str_ambG) ambG = atof(str_ambG)/255.0f;
 		const char* str_ambB = luz->Attribute("ambB");
-		if (str_ambB) ambB = atof(str_ambB);
+		if (str_ambB) ambB = atof(str_ambB)/255.0f;
 
 		const char* str_diffR = luz->Attribute("diffR");
-		if (str_diffR) diffR = atof(str_diffR);
+		if (str_diffR) diffR = atof(str_diffR)/255.0f;
 		const char* str_diffG = luz->Attribute("diffG");
-		if (str_diffG) diffG = atof(str_diffG);
+		if (str_diffG) diffG = atof(str_diffG)/255.0f;
 		const char* str_diffB = luz->Attribute("diffB");
-		if (str_diffB) diffB = atof(str_diffB);
+		if (str_diffB) diffB = atof(str_diffB)/255.0f;
 
 		Luz l(type,posX, posY, posZ, ambR, ambG, ambB, diffR, diffG, diffB);
 
@@ -361,13 +424,11 @@ void prepareScene(TiXmlHandle doc) {
 	prepareLights(lights);
 
 	numModelos = countModels(0, group);
+	numVertices = (int*)malloc(numModelos*sizeof(int));
 	buffers = (GLuint*)malloc(sizeof(GLuint)*numModelos);
 	glGenBuffers(numModelos, buffers);
 	normals = (GLuint*)malloc(sizeof(GLuint)*numModelos);
 	glGenBuffers(numModelos, normals);
-	textures = (GLuint*)malloc(sizeof(GLuint)*numModelos);
-	glGenBuffers(numModelos, textures);
-	numVertices = (int*)malloc(sizeof(int)*numModelos);
 
 	Transformacao transformacao = Transformacao();
 	prepareGroup(group, transformacao);

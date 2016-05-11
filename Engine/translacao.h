@@ -81,7 +81,7 @@ public:
 		cross(up, dir, left); normalize(left);
 		cross(dir, left, up); normalize(up);
 
-		buildRotMatrix(dir, up, left, m);
+		buildRotMatrix(dir, left, up, m);
 		free(dir);
 
 		return m;
