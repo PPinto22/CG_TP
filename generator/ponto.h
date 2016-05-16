@@ -47,16 +47,18 @@ public:
 	}
 	Ponto cross(Ponto b) {
 		Ponto res = Ponto();
-		res.setX(xval * b.z() - zval * b.y());
+		res.setX(yval * b.z() - zval * b.y());
 		res.setY(zval * b.x() - xval * b.z());
 		res.setZ(xval * b.y() - yval * b.x());
 		return res;
 	}
 	void normalize() {
 		float l = sqrt(xval * xval + yval * yval + zval * zval);
-		xval = xval / l;
-		yval = yval / l;
-		zval = zval / l;
+		if(l>0){
+			xval = xval / l;
+			yval = yval / l;
+			zval = zval / l;
+		}
 	}
 	string toString(){
 		string sponto = to_string(xval) + " " + to_string(yval) + " " + to_string(zval);

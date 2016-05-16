@@ -136,7 +136,7 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 		y = (i*height / stacks) - (height / 2);
 		vector<Ponto> aux;
 		for (int j = 0; j < slices; j++){
-			alpha = j * 2 * M_PI / slices;
+			alpha = -j * 2 * M_PI / slices;
 			z = raio*sin(alpha);
 			x = raio*cos(alpha);
 			Ponto p (x,y,z);			
@@ -155,40 +155,52 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 		for(int slice = 0; slice<slices; slice++){
 			int slice_direita = (slice + 1)%slices;
 
-				Ponto v1 = pontos[stack+1][slice].subtrai(pontos[stack][slice]);
-				Ponto v2 = pontos[stack][slice-1].subtrai(pontos[stack][slice]);
+				Ponto v1 = pontos[stack][slice+1].subtrai(pontos[stack][slice]);
+				Ponto v2 = pontos[stack+1][slice].subtrai(pontos[stack][slice]);
 				Ponto v = v1.cross(v2);
+				v = v2.cross(v1);
 				v.normalize();
+
 				
 				outfile << pontos[stack][slice].toString() << " " << v.toString() << endl;
 
-				v1 = pontos[stack+1+1][slice_direita].subtrai(pontos[stack+1][slice_direita]);
-				v2 = pontos[stack+1][slice_direita-1].subtrai(pontos[stack+1][slice_direita]);
+				v1 = pontos[stack+1][slice].subtrai(pontos[stack+1][slice_direita]);
+				
+				v2 = pontos[stack][slice_direita].subtrai(pontos[stack+1][slice_direita]);
 				v = v1.cross(v2);
+				v.normalize();
 
 				outfile << pontos[stack + 1][slice_direita].toString() << " " << v.toString() << endl;
 
-				v1 = pontos[stack+1+1][slice].subtrai(pontos[stack+1][slice]);
-				v2 = pontos[stack][slice-1].subtrai(pontos[stack+1][slice]);
+				v1 = pontos[stack][slice].subtrai(pontos[stack+1][slice]);
+				
+				v2 = pontos[stack+1][slice_direita].subtrai(pontos[stack+1][slice]);
 				v = v1.cross(v2);
+				v.normalize();
 
 				outfile << pontos[stack + 1][slice].toString() << " " << v.toString() << endl;
 
-				v1 = pontos[stack+1][slice].subtrai(pontos[stack][slice]);
-				v2 = pontos[stack][slice-1].subtrai(pontos[stack][slice]);
+				v1 = pontos[stack][slice+1].subtrai(pontos[stack][slice]);
+				
+				v2 = pontos[stack+1][slice].subtrai(pontos[stack][slice]);
 				v = v1.cross(v2);
+				v.normalize();
 
 				outfile << pontos[stack][slice].toString() << " " << v.toString() << endl;
 
 				v1 = pontos[stack+1][slice_direita].subtrai(pontos[stack][slice_direita]);
-				v2 = pontos[stack][slice_direita-1].subtrai(pontos[stack][slice_direita]);
+				
+				v2 = pontos[stack][slice].subtrai(pontos[stack][slice_direita]);
 				v = v1.cross(v2);
+				v.normalize();
 
-				outfile << pontos[stack][slice_direita].toString() << endl;
+				outfile << pontos[stack][slice_direita].toString() << " " << v.toString() << endl;
 
-				v1 = pontos[stack+1+1][slice_direita].subtrai(pontos[stack+1][slice_direita]);
-				v2 = pontos[stack+1][slice_direita-1].subtrai(pontos[stack+1][slice_direita]);
+				v1 = pontos[stack+1][slice].subtrai(pontos[stack+1][slice_direita]);
+				
+				v2 = pontos[stack][slice_direita].subtrai(pontos[stack+1][slice_direita]);
 				v = v1.cross(v2);
+				v.normalize();
 
 				outfile << pontos[stack + 1][slice_direita].toString() << " " << v.toString() << endl;
 
@@ -292,10 +304,48 @@ void bezier(string input,int tesselation, string output){
 
 		Ponto* pts = patches[i].getVertices(tesselation);
 		
-		for(int j = 0;j<(3*tesselation)*(3*tesselation)*6;j+=3){
-			outfile << pts[j].toString() << endl;
-			outfile << pts[j+1].toString() << endl;
-			outfile << pts[j+2].toString() << endl;
+		for(int j = 0;j<(3*tesselation)*(3*tesselation)*6;j+=6){
+			Ponto v1 = pts[j+1].subtrai(pts[j]);
+			Ponto v2 = pts[j+2].subtrai(pts[j]);
+			Ponto v = v1.cross(v2);
+			v.normalize();
+
+			outfile << pts[j].toString() << " " << v.toString() << endl;
+			/*-----------------*/
+			v1 = pts[j+5].subtrai(pts[j+1]);
+			v2 = pts[j].subtrai(pts[j+1]);
+			v = v1.cross(v2);
+			v.normalize();
+			
+			outfile << pts[j+1].toString() << " " << v.toString() << endl;
+			/*-----------------*/
+			
+			v1 = pts[j].subtrai(pts[j+2]);
+			v2 = pts[j+5].subtrai(pts[j+2]);
+			v = v1.cross(v2);
+			v.normalize();
+			outfile << pts[j+2].toString() << " " << v.toString() << endl;
+			/*-----------------*/
+
+			v1 = pts[j].subtrai(pts[j+3]);
+			v2 = pts[j+5].subtrai(pts[j+3]);
+			v = v1.cross(v2);
+			v.normalize();
+			outfile << pts[j+3].toString() << " " << v.toString() << endl;
+			/*-----------------*/
+
+			v1 = pts[j+5].subtrai(pts[j+4]);
+			v2 = pts[j].subtrai(pts[j+4]);
+			v = v1.cross(v2);
+			v.normalize();
+			outfile << pts[j+4].toString() << " " << v.toString() << endl;
+			/*-----------------*/
+
+			v1 = pts[j+3].subtrai(pts[j+5]);
+			v2 = pts[j+4].subtrai(pts[j+5]);
+			v = v1.cross(v2);
+			v.normalize();
+			outfile << pts[j+5].toString() << " " << v.toString() << endl;
 		}
 	}
 }
