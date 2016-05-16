@@ -138,4 +138,15 @@
 			<model file="sphere.3d"/>
 		</models>
 	</group>
+	<group>	<!-- Cometa -->
+		<translate time=30>
+			<point X=90  Y=0     Z=-90 />
+			<point X=0    Y=65   Z=0    />
+			<point X=-90 Y=0     Z=90  />
+			<point X=0    Y=-65  Z=0    />
+		</translate>
+		<models>
+			<model file="teapot.3d"/>
+		</models>
+	</group>
 </scene>

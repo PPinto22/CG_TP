@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <IL/il.h>
 #include "tinyxml.h"
 #include <string>
 #include <iostream>
@@ -30,6 +31,7 @@ int draw_mode = 0; //0 = Fill, 1 = Line, 2 = Point
 
 GLuint* buffers;
 GLuint* normals;
+GLuint* texCoords;
 vector<Material> materials;
 int *numVertices;
 int numModelos;
@@ -84,6 +86,7 @@ void renderScene(void) {
 		glLightfv(GL_LIGHT0+i, GL_POSITION, luzes[i].pos);
 	}
 	
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Drawing Mode
 	switch (draw_mode) {
@@ -144,7 +147,7 @@ void renderScene(void) {
 		// Material
 		Material mat = materials[i];
 		if (mat.hasTexture) {
-			// TODO - glBind, etc...
+			glBindTexture(GL_TEXTURE_2D, mat.texture);
 		}
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat.diff);
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat.spec);
@@ -155,6 +158,8 @@ void renderScene(void) {
 		glVertexPointer(3, GL_FLOAT, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, normals[1]);
 		glNormalPointer(GL_FLOAT, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, texCoords[i]);
+		glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
 		glDrawArrays(GL_TRIANGLES, 0, numVertices[i]);
 
@@ -219,12 +224,13 @@ Material prepareMaterial(TiXmlElement* model) {
 	float emissR = 0.0, emissG = 0.0, emissB = 0.0f;
 	float ambR = 0.2, ambG = 0.2, ambB = 0.2;
 
-	const char* texture = model->Attribute("texture");
-	if (texture) {
-		string path(texture);
+	const char* str_texture = model->Attribute("texture");
+	string path;
+	if (str_texture) {
+		path = string(str_texture);
 		path.insert(0, xmlPath);
-		texture = path.c_str();
 	}
+	const char* texture = path.c_str();
 
 	const char* str_diffR = model->Attribute("diffR");
 	if (str_diffR) diffR = atof(str_diffR) / 255.0f;
@@ -336,11 +342,14 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 			if (inFile >> pontosFicheiro) {
 				float* coordenadas = (float*)malloc(sizeof(float)*pontosFicheiro * 3);
 				float* coordenadas_normais = (float*)malloc(sizeof(float)*pontosFicheiro * 3);
+				float* coordenadas_textura = (float*)malloc(sizeof(float)*pontosFicheiro * 2);
 
 				for (int i = 0; i < pontosFicheiro; i++) {
 					int j = i * 3;
+					int jText = i * 2;
 					inFile >> coordenadas[j] >> coordenadas[j + 1] >> coordenadas[j + 2];
 					inFile >> coordenadas_normais[j] >> coordenadas_normais[j + 1] >> coordenadas_normais[j + 2];
+					inFile >> coordenadas_textura[jText] >> coordenadas_textura[jText + 1];
 				}
 
 				int indice = transformacoes.size();
@@ -350,11 +359,17 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 				Material mat = prepareMaterial(model);
 				materials.push_back(mat);
 
-				glBindBuffer(GL_ARRAY_BUFFER, normals[indice]);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pontosFicheiro * 3, coordenadas_normais, GL_STATIC_DRAW);
 				glBindBuffer(GL_ARRAY_BUFFER, buffers[indice]);
 				glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pontosFicheiro * 3, coordenadas, GL_STATIC_DRAW);
 				free(coordenadas);
+
+				glBindBuffer(GL_ARRAY_BUFFER, normals[indice]);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pontosFicheiro * 3, coordenadas_normais, GL_STATIC_DRAW);
+				free(coordenadas_normais);
+
+				glBindBuffer(GL_ARRAY_BUFFER, texCoords[indice]);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pontosFicheiro * 2, coordenadas_textura, GL_STATIC_DRAW);
+				free(coordenadas_textura);
 			}
 		}
 		TiXmlElement* group_rec = group->FirstChildElement("group");
@@ -429,6 +444,8 @@ void prepareScene(TiXmlHandle doc) {
 	glGenBuffers(numModelos, buffers);
 	normals = (GLuint*)malloc(sizeof(GLuint)*numModelos);
 	glGenBuffers(numModelos, normals);
+	texCoords = (GLuint*)malloc(sizeof(GLuint)*numModelos);
+	glGenBuffers(numModelos, texCoords);
 
 	Transformacao transformacao = Transformacao();
 	prepareGroup(group, transformacao);
@@ -528,8 +545,13 @@ int main(int argc, char **argv) {
 	glutInitWindowSize(800, 800);
 	glutCreateWindow("3D Engine");
 
-	//init glew
+	//init glew and devil
 	glewInit();
+
+	//devil
+	ilInit();
+	ilEnable(IL_ORIGIN_SET);
+	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
 
 	// Required callback registry
 	glutDisplayFunc(renderScene);
@@ -550,6 +572,8 @@ int main(int argc, char **argv) {
 	glEnable(GL_CULL_FACE);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_TEXTURE_2D);
 
 	// Ler xml e preparar cena
 	TiXmlHandle docHandle(&doc);

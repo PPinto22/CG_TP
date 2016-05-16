@@ -7,18 +7,37 @@ public:
 	float spec[4];
 	float emiss[4];
 	float amb[4];
-	GLuint texture;
-	bool hasTexture;
 
-	Material(const char* texture,
+	bool hasTexture;
+	GLuint texture;
+	unsigned int image;
+	int width, height;
+	unsigned char* imageData;
+
+	Material(const char* textureFile,
 		float diffR, float diffG, float diffB,
 		float specR, float specG, float specB,
 		float emissR, float emissG, float emissB,
 		float ambR, float ambG, float ambB) {
 
-		if (texture) {
-			//Ler com glut e gravar no VBO
+		if (strcmp(textureFile,"") != 0) {
 			this->hasTexture = true;
+
+			ilGenImages(1, &image);
+			ilBindImage(image);
+			ilLoadImage((ILstring)textureFile);
+			ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+			width = ilGetInteger(IL_IMAGE_WIDTH);
+			height = ilGetInteger(IL_IMAGE_HEIGHT);
+			imageData = ilGetData();
+
+			glGenTextures(1, &texture);
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 		}
 		else this->hasTexture = false;
 
