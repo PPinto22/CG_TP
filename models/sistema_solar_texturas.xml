@@ -6,7 +6,20 @@
 		<scale X=20 Y=20 Z=20/>
 		<rotate time=25 axisX=0 axisY=1 axisZ=0 />
 		<models>
-			<model file="box.3d" texture="dickbutt.jpg" emissR=255 emissG=50 emissB=0/>
+			<model file="plane.3d" texture="dickbutt.jpg" emissR=255 emissG=50 emissB=0/>
+		</models>
+	</group>
+		<group> <!-- Mercurio -->
+		<translate time=8>
+			<point X=30    Y=0 Z=0     />
+			<point X=0     Y=0 Z=-30   />
+			<point X=-30   Y=0 Z=0     />
+			<point X=0     Y=0 Z=30    />
+		</translate>
+		<scale X=10 Y=10 Z=10/>
+		<rotate time=20 axisX=0 axisY=1 axisZ=0 />
+		<models>
+			<model file="plane.3d"/>
 		</models>
 	</group>
 </scene>

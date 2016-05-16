@@ -86,8 +86,6 @@ void renderScene(void) {
 		glLightfv(GL_LIGHT0+i, GL_POSITION, luzes[i].pos);
 	}
 	
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	// Drawing Mode
 	switch (draw_mode) {
 	case 0:
@@ -103,6 +101,7 @@ void renderScene(void) {
 
 	for (int i = 0; i < numModelos; i++) {
 		glPushMatrix();
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 		Transformacao transformacao = transformacoes[i];
 
@@ -156,7 +155,7 @@ void renderScene(void) {
 		
 		glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
 		glVertexPointer(3, GL_FLOAT, 0, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, normals[1]);
+		glBindBuffer(GL_ARRAY_BUFFER, normals[i]);
 		glNormalPointer(GL_FLOAT, 0, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, texCoords[i]);
 		glTexCoordPointer(2, GL_FLOAT, 0, 0);
