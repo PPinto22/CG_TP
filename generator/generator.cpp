@@ -26,9 +26,17 @@ void plane(float lado, string ficheiro) {
 	ofstream outfile(ficheiro);
 
 	outfile << nVertices << endl;
-	outfile << escreveTriangulo(pt1, pt2, pt3, normal) << endl;
-	outfile << escreveTriangulo(pt3, pt4, pt1, normal);
+	/*outfile << escreveTriangulo(pt1, pt2, pt3, normal) << endl;
+	outfile << escreveTriangulo(pt3, pt4, pt1, normal);*/
+	string triangulo1 =	pt1.toString() + " " + normal.toString() + " " + "1.0" + " " + "1.0" + "\n" +
+					   	pt2.toString() + " " + normal.toString() + " " + "1.0" + " " + "0.0" + "\n" +
+					   	pt3.toString() + " " + normal.toString() + " " + "0.0" + " " + "0.0";
+	string triangulo2 = pt3.toString() + " " + normal.toString() + " " + "0.0" + " " + "0.0" + "\n" +
+					   	pt4.toString() + " " + normal.toString() + " " + "0.0" + " " + "1.0" + "\n" +
+					   	pt1.toString() + " " + normal.toString() + " " + "1.0" + " " + "1.0";
 
+	outfile << triangulo1 << endl;
+	outfile << triangulo2 << endl;
 	outfile.close();
 }
 

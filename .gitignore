@@ -55,13 +55,9 @@ CG_TP.VC.opendb
 *.obj
 *.opendb
 Engine/x64/Debug/Engine.log
-*.vcxproj
 *.log
 *.ilk
 *.exe
 generator/generator.vcxproj.user
 generator/generator.vcxproj.user
 
-*.filters
-
-generator/generator.vcxproj.filters
