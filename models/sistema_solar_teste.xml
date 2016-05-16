@@ -6,7 +6,10 @@
 		<scale X=20 Y=20 Z=20/>
 		<rotate time=25 axisX=0 axisY=1 axisZ=0 />
 		<models>
-			<model file="sphere.3d" emissR=255 emissG=50 emissB=0/>
+			<model file="sphere.3d" 
+				emissR=255 emissG=50 emissB=0
+				ambR=255 ambG=50 ambB=0
+			/>
 		</models>
 	</group>
 	<group> <!-- Mercurio -->
@@ -18,7 +21,7 @@
 		</translate>
 		<rotate time=290 axisX=0 axisY=1 axisZ=0 />
 		<models>
-			<model file="sphere.3d"/>
+			<model file="box.3d"/>
 		</models>
 	</group>
 	<group>	<!-- Venus -->
@@ -136,6 +139,17 @@
 		<scale X=4 Y=4 Z=4/>
 		<models>
 			<model file="sphere.3d"/>
+		</models>
+	</group>
+	<group>	<!-- Cometa -->
+		<translate time=30>
+			<point X=90  Y=0     Z=-90 />
+			<point X=0    Y=65   Z=0    />
+			<point X=-90 Y=0     Z=90  />
+			<point X=0    Y=-65  Z=0    />
+		</translate>
+		<models>
+			<model file="teapot.3d"/>
 		</models>
 	</group>
 </scene>

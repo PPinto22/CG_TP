@@ -291,11 +291,61 @@ void bezier(string input,int tesselation, string output){
 		patches[i].preenche(pontos);
 
 		Ponto* pts = patches[i].getVertices(tesselation);
+
+		Ponto normal(0.0, -1.0, 0.0);
 		
-		for(int j = 0;j<(3*tesselation)*(3*tesselation)*6;j+=3){
-			outfile << pts[j].toString() << endl;
-			outfile << pts[j+1].toString() << endl;
-			outfile << pts[j+2].toString() << endl;
+		for(int j = 0;j<(3*tesselation)*(3*tesselation)*6;j+=6){
+
+			Ponto v1 = pts[j + 1].subtrai(pts[j]);
+			Ponto v2 = pts[j + 2].subtrai(pts[j]);
+			Ponto v = v1.cross(v2);
+			v.normalize();
+
+			outfile << pts[j].toString() << " " << v.toString() << endl;
+			/*-----------------*/
+			v1 = pts[j + 5].subtrai(pts[j + 1]);
+			v2 = pts[j].subtrai(pts[j + 1]);
+			v = v1.cross(v2);
+			v.normalize();
+
+			outfile << pts[j + 1].toString() << " " << v.toString() << endl;
+			/*-----------------*/
+
+			v1 = pts[j].subtrai(pts[j + 2]);
+			v2 = pts[j + 5].subtrai(pts[j + 2]);
+			v = v1.cross(v2);
+			v.normalize();
+			outfile << pts[j + 2].toString() << " " << v.toString() << endl;
+			/*-----------------*/
+
+			v1 = pts[j].subtrai(pts[j + 2]);
+			v2 = pts[j + 5].subtrai(pts[j + 2]);
+			v = v1.cross(v2);
+			v.normalize();
+			outfile << pts[j + 3].toString() << " " << v.toString() << endl;
+			/*-----------------*/
+
+			v1 = pts[j + 5].subtrai(pts[j + 4]);
+			v2 = pts[j].subtrai(pts[j + 4]);
+			v = v1.cross(v2);
+			v.normalize();
+			outfile << pts[j + 4].toString() << " " << v.toString() << endl;
+			/*-----------------*/
+
+			v1 = pts[j + 3].subtrai(pts[j + 5]);
+			v2 = pts[j + 4].subtrai(pts[j + 5]);
+			v = v1.cross(v2);
+			v.normalize();
+			outfile << pts[j + 5].toString() << " " << v.toString() << endl;
+
+			//outfile << pts[j].toString() << " " << normal.toString() << endl;
+			//outfile << pts[j+1].toString() << " " << normal.toString() << endl;
+			//outfile << pts[j+2].toString() << " " << normal.toString() << endl;
+			//
+			//outfile << pts[j + 3].toString() << " " << normal.toString() << endl;
+			//outfile << pts[j + 4].toString() << " " << normal.toString() << endl;
+			//outfile << pts[j + 5].toString() << " " << normal.toString() << endl;
+			
 		}
 	}
 }

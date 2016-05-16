@@ -153,7 +153,7 @@ void renderScene(void) {
 		
 		glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
 		glVertexPointer(3, GL_FLOAT, 0, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, normals[1]);
+		glBindBuffer(GL_ARRAY_BUFFER, normals[i]);
 		glNormalPointer(GL_FLOAT, 0, 0);
 
 		glDrawArrays(GL_TRIANGLES, 0, numVertices[i]);
