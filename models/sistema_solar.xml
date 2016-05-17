@@ -1,6 +1,11 @@
 <scene>
 	<lights>
-		<light type="POINT" posX=0 posY=10 posZ=0 emissR=255 emissG=255 emissB=255/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>		
 	</lights>
 	<group>	<!-- Sol -->
 		<scale X=20 Y=20 Z=20/>
@@ -11,10 +16,14 @@
 	</group>
 	<group> <!-- Mercurio -->
 		<translate time=8>
-			<point X=35    Y=0 Z=0     />
-			<point X=0     Y=0 Z=-35   />
-			<point X=-35   Y=0 Z=0     />
-			<point X=0     Y=0 Z=35    />
+			<point X=32    	Y=0 Z=0			/>
+			<point X=22.62  Y=0 Z=-22.62    />
+			<point X=0     	Y=0 Z=-32   	/>
+			<point X=-22.62 Y=0 Z=-22.62    />
+			<point X=-32   	Y=0 Z=0     	/>
+			<point X=-22.62 Y=0 Z=22.62     />
+			<point X=0		Y=0 Z=32    	/>
+			<point X=22.62  Y=0 Z=22.62     />
 		</translate>
 		<scale X=4 Y=4 Z=4/>
 		<rotate time=10 axisX=0 axisY=1 axisZ=0 />
@@ -24,10 +33,14 @@
 	</group>
 	<group>	<!-- Venus -->
 		<translate time=12>
-			<point X=47  Y=0 Z=0   />
-			<point X=0   Y=0 Z=-47 />
-			<point X=-47 Y=0 Z=0   />
-			<point X=0   Y=0 Z=47  />
+			<point X=47  	Y=0 Z=0   		/>
+			<point X=33.23  Y=0 Z=-33.23    />			
+			<point X=0   	Y=0 Z=-47 		/>
+			<point X=-33.23 Y=0 Z=-33.23    />			
+			<point X=-47 	Y=0 Z=0   		/>
+			<point X=-33.23 Y=0 Z=33.23     />			
+			<point X=0  	Y=0 Z=47  		/>
+			<point X=33.23  Y=0 Z=33.23     />			
 		</translate>
 		<rotate time=8 axisX=0 axisY=1 axisZ=0 />		
 		<scale X=5.5 Y=5.5 Z=5.5/>
@@ -37,10 +50,14 @@
 	</group>
 	<group>	<!-- Terra -->
 		<translate time=18>
-			<point X=65  Y=0 Z=0   />
-			<point X=0   Y=0 Z=-65 />
-			<point X=-65 Y=0 Z=0   />
-			<point X=0   Y=0 Z=65  />
+			<point X=65  	Y=0 Z=0   		/>
+			<point X=45.96  Y=0 Z=-45.96    />			
+			<point X=0   	Y=0 Z=-65 		/>
+			<point X=-45.96 Y=0 Z=-45.96    />			
+			<point X=-65 	Y=0 Z=0   		/>
+			<point X=-45.96 Y=0 Z=45.96     />			
+			<point X=0  	Y=0 Z=65  		/>
+			<point X=45.96  Y=0 Z=45.96     />				
 		</translate>
 		<rotate time=5 axisX=0 axisY=1 axisZ=0 />		
 		<scale X=7 Y=7 Z=7/>
@@ -49,10 +66,14 @@
 		</models>
 		<group> <!-- Lua -->
 			<translate time=6>
-				<point X=11  T=0 Z=0  />
-				<point X=0  Y=0 Z=-11 />
-				<point X=-11 Y=0 Z=0  />
-				<point X=0  Y=0 Z=11  />
+				<point X=11  	Y=0 Z=0   	/>
+				<point X=7.77  	Y=0 Z=-7.77 />			
+				<point X=0   	Y=0 Z=-11 	/>
+				<point X=-7.77 	Y=0 Z=-7.77 />			
+				<point X=-11 	Y=0 Z=0   	/>
+				<point X=-7.77 	Y=0 Z=7.77  />			
+				<point X=0  	Y=0 Z=11  	/>
+				<point X=7.77  	Y=0 Z=7.77	/>	
 			</translate>
 			<rotate time=6 axisX=0 axisY=1 axisZ=0 />
 			<scale X=0.3 Y=0.3 Z=0.3/>
@@ -63,10 +84,14 @@
 	</group>
 	<group>	<!-- Marte -->
 		<translate time=34>
-			<point X=86  Y=0 Z=0   />
-			<point X=0   Y=0 Z=-86 />
-			<point X=-86 Y=0 Z=0   />
-			<point X=0   Y=0 Z=86  />
+			<point X=86  	Y=0 Z=0   		/>
+			<point X=60.81  Y=0 Z=-60.81    />			
+			<point X=0   	Y=0 Z=-86 		/>
+			<point X=-60.81 Y=0 Z=-60.81    />			
+			<point X=-86 	Y=0 Z=0   		/>
+			<point X=-60.81 Y=0 Z=60.81     />			
+			<point X=0  	Y=0 Z=86  		/>
+			<point X=60.81  Y=0 Z=60.81     />				
 		</translate>
 		<rotate time=5 axisX=0 axisY=1 axisZ=0 />		
 		<scale X=6.5 Y=6.5 Z=6.5/>
@@ -76,10 +101,14 @@
 	</group>
 	<group>	<!-- Jupiter -->
 		<translate time=70>
-			<point X=110  Y=0 Z=0   />
-			<point X=0   Y=0 Z=-110 />
-			<point X=-110 Y=0 Z=0   />
-			<point X=0   Y=0 Z=110  />
+			<point X=110  	Y=0 Z=0   		/>
+			<point X=77.78  Y=0 Z=-77.78    />			
+			<point X=0   	Y=0 Z=-110 		/>
+			<point X=-77.78 Y=0 Z=-77.78    />			
+			<point X=-110 	Y=0 Z=0   		/>
+			<point X=-77.78 Y=0 Z=77.78     />			
+			<point X=0  	Y=0 Z=110  		/>
+			<point X=77.78  Y=0 Z=77.78     />				
 		</translate>
 		<rotate time=3 axisX=0 axisY=1 axisZ=0 />		
 		<scale X=10 Y=10 Z=10/>
@@ -88,10 +117,14 @@
 		</models>
 		<group>	<!-- Ganímedes -->
 			<translate time=3>
-				<point X=15  Y=0 Z=0   />
-				<point X=0   Y=0 Z=-15 />
-				<point X=-15 Y=0 Z=0   />
-				<point X=0   Y=0 Z=15  />
+				<point X=15  	Y=0 Z=0   		/>
+				<point X=10.60  Y=0 Z=-10.60    />			
+				<point X=0   	Y=0 Z=-15 		/>
+				<point X=-10.60 Y=0 Z=-10.60    />			
+				<point X=-15 	Y=0 Z=0   		/>
+				<point X=-10.60 Y=0 Z=10.60     />			
+				<point X=0  	Y=0 Z=15  		/>
+				<point X=10.60  Y=0 Z=10.60     />						
 			</translate>
 			<rotate time=35 axisX=0 axisY=1 axisZ=0 />		
 			<scale X=0.15 Y=0.15 Z=0.15/>
@@ -102,10 +135,14 @@
 	</group>
 	<group>	<!-- Saturno -->
 		<translate time=80>
-			<point X=130  Y=0 Z=0   />
-			<point X=0   Y=0 Z=-130 />
-			<point X=-130 Y=0 Z=0   />
-			<point X=0   Y=0 Z=130  />
+			<point X=135  	Y=0 Z=0   		/>
+			<point X=95.45  Y=0 Z=-95.45    />			
+			<point X=0   	Y=0 Z=-135 		/>
+			<point X=-95.45 Y=0 Z=-95.45    />			
+			<point X=-135 	Y=0 Z=0   		/>
+			<point X=-95.45 Y=0 Z=95.45     />			
+			<point X=0  	Y=0 Z=135  		/>
+			<point X=95.45  Y=0 Z=95.45     />				
 		</translate>
 		<rotate time=3.1 axisX=0 axisY=1 axisZ=0 />		
 		<scale X=8.5 Y=8.5 Z=8.5/>
@@ -115,10 +152,14 @@
 	</group>
 	<group>	<!-- Urano -->
 		<translate time=90>
-			<point X=145  Y=0 Z=0    />
-			<point X=0    Y=0 Z=-145 />
-			<point X=-145 Y=0 Z=0    />
-			<point X=0    Y=0 Z=145  />
+			<point X=155  	 Y=0 Z=0   		/>
+			<point X=109.60  Y=0 Z=-109.60  />			
+			<point X=0   	 Y=0 Z=-155 	/>
+			<point X=-109.60 Y=0 Z=-109.60  />			
+			<point X=-155 	 Y=0 Z=0   		/>
+			<point X=-109.60 Y=0 Z=109.60   />			
+			<point X=0  	 Y=0 Z=155  	/>
+			<point X=109.60  Y=0 Z=109.60	/>				
 		</translate>
 		<rotate time=3.5 axisX=0 axisY=1 axisZ=0 />		
 		<scale X=7.5 Y=7.5 Z=7.5/>
@@ -128,10 +169,14 @@
 	</group>
 	<group>	<!-- Neptuno -->
 		<translate time=100>
-			<point X=160  Y=0 Z=0    />
-			<point X=0    Y=0 Z=-160 />
-			<point X=-160 Y=0 Z=0    />
-			<point X=0    Y=0 Z=160  />
+			<point X=175  	 Y=0 Z=0   		/>
+			<point X=123.74  Y=0 Z=-123.74  />			
+			<point X=0   	 Y=0 Z=-175 	/>
+			<point X=-123.74 Y=0 Z=-123.74  />			
+			<point X=-175 	 Y=0 Z=0   		/>
+			<point X=-123.74 Y=0 Z=123.74   />			
+			<point X=0  	 Y=0 Z=175  	/>
+			<point X=123.74  Y=0 Z=123.74	/>				
 		</translate>
 		<rotate time=4 axisX=0 axisY=1 axisZ=0 />		
 		<scale X=7.5 Y=7.5 Z=7.5/>
@@ -141,10 +186,14 @@
 	</group>
 	<group>	<!-- Cometa -->
 		<translate time=30>
-			<point X=120  Y=0     Z=-120 />
-			<point X=0    Y=65   Z=0    />
-			<point X=-120 Y=0     Z=120  />
-			<point X=0    Y=-65  Z=0    />
+			<point X=140  	Y=0 	 Z=-140 	/>
+			<point X=98.99  Y=49.49  Z=-98.99  	/>			
+			<point X=0   	Y=70 	 Z=0 		/>
+			<point X=-98.99 Y=49.49  Z=98.99  	/>			
+			<point X=-140  	Y=0 	 Z=140 		/>
+			<point X=-98.99 Y=-49.49 Z=98.99  	/>			
+			<point X=0  	Y=-70 	 Z=0	  	/>
+			<point X=98.99  Y=-49.49 Z=-98.99  	/>			
 		</translate>
 		<scale X=1.5 Y=1.5 Z=1.5/>
 		<models>
