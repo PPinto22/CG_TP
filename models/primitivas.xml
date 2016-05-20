@@ -40,7 +40,7 @@
 		</translate>
 		<scale X=2 Y=2 Z=2/>
 		<models>
-			<model file="cone.3d" texture="texturas/terra.jpg"/>
+			<model file="cone.3d" texture="texturas/cone.jpg"/>
 		</models>
 	</group>
 	<group>	<!-- Plano 1 -->

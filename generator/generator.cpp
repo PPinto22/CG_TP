@@ -168,24 +168,18 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 	ofstream outfile(ficheiro);
 	int numVertices = slices*stacks * 6 + 3 * slices;
 	outfile << numVertices << endl;
-	
 	float xx,yy,xSlice_direita,yStack_cima;
 
 	//Escreve triangulos laterais
 	for(int stack = 0; stack<stacks; stack++){
 		for(int slice = 0; slice<slices; slice++){
 			int slice_direita = (slice + 1)%slices;
-			
-				
-				xx=(float)slice/slices;
-				yy=((((float)stack/stacks)*0.625)+0.375);
-				xSlice_direita = (float)slice_direita/slices;
-				yStack_cima = yy+((1.0/stacks)*0.625);
-				printf("Slice da direita = %f\n",yStack_cima);
 
-				if(stack==stacks-1){
-					yStack_cima=1;
-				}
+				xx=(float)slice/slices;
+				yy=((((float)stack/stacks)/1.6)+0.375);
+				xSlice_direita = slice_direita/slices;
+				yStack_cima = yy+(((float)stack/stacks)/1.6)+0.375;
+
 				if(slice==slices-1){
 					xSlice_direita = 1;
 				}
@@ -193,7 +187,7 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 				Ponto v1 = pontos[stack][slice_direita].subtrai(pontos[stack][slice]);
 				Ponto v2 = pontos[stack+1][slice].subtrai(pontos[stack][slice]);
 				Ponto v = v1.cross(v2);
-				v = v1.cross(v2);
+				v = v2.cross(v1);
 				v.normalize();
 				outfile << pontos[stack][slice].toString() << " " << v.toString() << " " << to_string(xx) << " " << to_string(yy) << endl;
 				/*---*/
@@ -203,7 +197,7 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 				v = v1.cross(v2);
 				v.normalize();
 
-				outfile << pontos[stack + 1][slice_direita].toString() << " " << v.toString() << " " << to_string(xSlice_direita) <<  " " << to_string(yStack_cima) << endl;
+				outfile << pontos[stack + 1][slice_direita].toString() << " " << v.toString() << " " << to_string(xSlice_direita) << " " << to_string(yStack_cima) << endl;
 				/*---*/
 				v1 = pontos[stack][slice].subtrai(pontos[stack+1][slice]);
 				
@@ -240,27 +234,25 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 		}
 	}
 
-	float intervalo = (1.0/slices)*360;
-	float xx_,coord_x,coord_y,coord_xx,coord_yy;
-
 	//Escreve triangulos da base
 	for(int slice = 0; slice<slices; slice++){
 		int slice_direita=(slice+1)%slices;
 
-		xx_ = slice*intervalo;
-		coord_x = (cos(xx_)*0.1875)+0.5;
-		coord_y = (sin(xx_)*0.1875)+0.1875;
-		coord_xx = (cos(xx_+((1.0/slices)*intervalo))*0.1875)+0.5;
-		coord_yy = (sin(xx_+((1.0/slices)*intervalo))*0.1875)+0.1875;
+		float intervalo = (float)slice/slices;
+		float coord = intervalo*360/slices;
+		float intervalo_direita = (float)slice_direita/slices;
+		float coord_direita = intervalo_direita*360/slices;
+		float xxx = cos(coord)*0.1875+0.5;
+		float yyy = sin(coord)*0.1875+0.1875;
+		float xxSlice_direita = cos(coord_direita)*0.1875+0.5;
 
 		if(slice==slices-1){
-			coord_xx = 0;
-			coord_yy = 0;
+			xxSlice_direita = 0;
 		}
 
-		outfile << pontos[0][slice].toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(coord_x) << " " << to_string(coord_y) << endl;
+		outfile << pontos[0][slice].toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(xxx) << " " << to_string(yyy) << endl;
 		outfile << pBot.toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(0.5) << " " << to_string(0.1875) << endl;
-		outfile << pontos[0][slice_direita].toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(coord_xx) << " " << to_string(coord_yy) << endl;
+		outfile << pontos[0][slice_direita].toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(xxSlice_direita) << " " << to_string(yyy) << endl;
 	}
 
 	outfile.close();
@@ -362,7 +354,7 @@ void bezier(string input,int tesselation, string output){
 			
 			outfile << pts[j].toString() << " " << v.toString() << " " << to_string(pts[j].textX()) << " " << to_string(pts[j].textY()) << endl;
 			/*-----------------*/
-			v1 = pts[j+5].subtrai(pts[j+1]);
+			v1 = pts[j+4].subtrai(pts[j+1]);
 			v2 = pts[j].subtrai(pts[j+1]);
 			v = v1.cross(v2);
 			v.normalize();
@@ -371,31 +363,31 @@ void bezier(string input,int tesselation, string output){
 			/*-----------------*/
 			
 			v1 = pts[j].subtrai(pts[j+2]);
-			v2 = pts[j+5].subtrai(pts[j+2]);
+			v2 = pts[j+4].subtrai(pts[j+2]);
 			v = v1.cross(v2);
 			v.normalize();
 			outfile << pts[j+2].toString() << " " << v.toString() << " " << to_string(pts[j+2].textX()) << " " << to_string(pts[j+2].textY()) << endl;
 			/*-----------------*/
 
-			v1 = pts[j].subtrai(pts[j+3]);
-			v2 = pts[j+5].subtrai(pts[j+3]);
+			v1 = pts[j+4].subtrai(pts[j+3]);
+			v2 = pts[j].subtrai(pts[j+3]);
 			v = v1.cross(v2);
 			v.normalize();
 			outfile << pts[j+3].toString() << " " << v.toString() << " " << to_string(pts[j+3].textX()) << " " << to_string(pts[j+3].textY()) << endl;
 			/*-----------------*/
 
 			v1 = pts[j+5].subtrai(pts[j+4]);
-			v2 = pts[j].subtrai(pts[j+4]);
+			v2 = pts[j+1].subtrai(pts[j+4]);
 			v = v1.cross(v2);
 			v.normalize();
 			outfile << pts[j+4].toString() << " " << v.toString() << " " << to_string(pts[j+4].textX()) << " " << to_string(pts[j+4].textY()) << endl;
 			/*-----------------*/
 
-			v1 = pts[j+3].subtrai(pts[j+5]);
+			v1 = pts[j].subtrai(pts[j+5]);
 			v2 = pts[j+4].subtrai(pts[j+5]);
 			v = v1.cross(v2);
 			v.normalize();
-			outfile << pts[j+5].toString() << " " << v.toString() << " " << to_string(pts[j+5].textX()) << " " << to_string(pts[j+1].textY()) << endl;
+			outfile << pts[j+5].toString() << " " << v.toString() << " " << to_string(pts[j+5].textX()) << " " << to_string(pts[j+5].textY()) << endl;
 		}
 	}
 }
