@@ -70,6 +70,7 @@ void changeSize(int w, int h) {
 int timebase = 0;
 int frame = 0;
 float fps;
+char* fps_string = (char*)malloc(8 * sizeof(char));
 
 void renderScene(void) {
 
@@ -180,7 +181,6 @@ void renderScene(void) {
 		frame = 0;
 	}
 
-	char* fps_string = (char*)malloc(8 * sizeof(char));
 	sprintf(fps_string, "%.0f fps", fps);
 	glutSetWindowTitle(fps_string);
 
