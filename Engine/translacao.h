@@ -5,17 +5,25 @@ class Translacao {
 public:
 	int tempo; //milisegundos
 	vector<Ponto> pontos;
-	float up[3] = { 0.0f, 1.0f, 0.0f };
+	float* up;
 	GLuint orbita;
 
 	Translacao() {
 		this->tempo = 0;
 		this->pontos = vector<Ponto>();
+		this->up = (float*)malloc(3 * sizeof(float));
+		this->up[0] = 0.0f;
+		this->up[1] = 1.0f;
+		this->up[2] = 0.0f;
 	}
 
 	Translacao(float segundos, vector<Ponto> pontos) {
 		this->tempo = (int) (segundos*1000);
 		this->pontos = pontos;
+		this->up = (float*)malloc(3 * sizeof(float));
+		this->up[0] = 0.0f;
+		this->up[1] = 1.0f;
+		this->up[2] = 0.0f;
 	}
 
 	void gerarLinhaOrbita(int n) {

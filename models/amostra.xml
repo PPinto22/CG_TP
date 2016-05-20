@@ -1,0 +1,34 @@
+<scene>
+	<lights>
+		<light type="POINT" posX=0 posY=0 posZ=0/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>
+		<light type="POINT" posX=0 posY=0 posZ=0/>		
+	</lights>
+	<group>	<!-- Sol -->
+		<scale X=20 Y=20 Z=20/>
+		<rotate time=25 axisX=0 axisY=1 axisZ=0 />
+		<models>
+			<model file="cone.3d" texture="texturas/sol.jpg" emissR=255 emissG=100 emissB=0/>
+		</models>
+	</group>
+	<group> <!-- Mercurio -->
+		<translate time=8>
+			<point X=32    	Y=0 Z=0			/>
+			<point X=22.62  Y=0 Z=-22.62    />
+			<point X=0     	Y=0 Z=-32   	/>
+			<point X=-22.62 Y=0 Z=-22.62    />
+			<point X=-32   	Y=0 Z=0     	/>
+			<point X=-22.62 Y=0 Z=22.62     />
+			<point X=0		Y=0 Z=32    	/>
+			<point X=22.62  Y=0 Z=22.62     />
+		</translate>
+		<scale X=4 Y=4 Z=4/>
+		<rotate time=10 axisX=0 axisY=1 axisZ=0 />
+		<models>
+			<model file="cone.3d" texture="texturas/mercurio.jpg"/>
+		</models>
+	</group>
+</scene>

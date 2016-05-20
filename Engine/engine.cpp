@@ -22,6 +22,8 @@ using namespace std;
 
 #define PONTOS_LINHA_ORBITA 1000
 
+bool orbitas = true;
+
 float camX = 0, camY = 0, camZ = 300;
 int startX, startY, tracking = 0;
 
@@ -114,12 +116,14 @@ void renderScene(void) {
 			Translacao translacao = translacoes[i];
 
 			// Desenhar orbita
-			glDisable(GL_LIGHTING);
-			glColor3f(30.0/255.0, 30.0/255.0, 40.0 / 255.0);
-			glBindBuffer(GL_ARRAY_BUFFER, translacao.orbita);
-			glVertexPointer(3, GL_FLOAT, 0, 0);
-			glDrawArrays(GL_LINE_LOOP, 0, PONTOS_LINHA_ORBITA);
-			glEnable(GL_LIGHTING);
+			if (orbitas) {
+				glDisable(GL_LIGHTING);
+				glColor3f(30.0 / 255.0, 30.0 / 255.0, 40.0 / 255.0);
+				glBindBuffer(GL_ARRAY_BUFFER, translacao.orbita);
+				glVertexPointer(3, GL_FLOAT, 0, 0);
+				glDrawArrays(GL_LINE_LOOP, 0, PONTOS_LINHA_ORBITA);
+				glEnable(GL_LIGHTING);
+			}
 
 			// Translacao
 			Ponto p = translacao.getPoint(time);
@@ -573,7 +577,7 @@ int main(int argc, char **argv) {
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnable(GL_TEXTURE_2D);
-
+	glEnable(GL_RESCALE_NORMAL);
 	// Ler xml e preparar cena
 	TiXmlHandle docHandle(&doc);
 	prepareScene(docHandle);
