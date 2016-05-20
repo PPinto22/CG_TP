@@ -7,6 +7,7 @@ public:
 	vector<Ponto> pontos;
 	float* up;
 	GLuint orbita;
+	int x, y, z;
 
 	Translacao() {
 		this->tempo = 0;
@@ -15,15 +16,21 @@ public:
 		this->up[0] = 0.0f;
 		this->up[1] = 1.0f;
 		this->up[2] = 0.0f;
+		this->x = 0;
+		this->y = 0;
+		this->z = 0;
 	}
 
-	Translacao(float segundos, vector<Ponto> pontos) {
+	Translacao(int x, int y, int z, float segundos, vector<Ponto> pontos) {
 		this->tempo = (int) (segundos*1000);
 		this->pontos = pontos;
 		this->up = (float*)malloc(3 * sizeof(float));
 		this->up[0] = 0.0f;
 		this->up[1] = 1.0f;
 		this->up[2] = 0.0f;
+		this->x = x;
+		this->y = y;
+		this->z = z;
 	}
 
 	void gerarLinhaOrbita(int n) {
@@ -43,6 +50,10 @@ public:
 	
 	// given  global t, returns the point in the curve
 	Ponto getPoint(float gt) {
+		if (this->tempo <= 0 || this->pontos.size() < 4) {
+			return Ponto(x, y, z);
+		}
+
 		float t = gt * pontos.size(); // this is the real global t
 		int index = floor(t);  // which segment
 		t = t - index; // where within  the segment
@@ -57,6 +68,10 @@ public:
 	}
 
 	Ponto getPoint(int milisegundos) {
+		if (this->tempo <= 0 || this->pontos.size() < 4) {
+			return Ponto(x, y, z);
+		}
+
 		float gt = (float)(milisegundos % this->tempo) / this->tempo;
 		float t = gt * pontos.size();
 		int index = floor(t);
@@ -72,6 +87,10 @@ public:
 	}
 
 	float* getRotMatrix(int milisegundos) {
+		if (this->tempo <= 0 || this->pontos.size() < 4) {
+			return NULL;
+		}
+
 		float left[3];
 		float* m = (float*)malloc(16*sizeof(float));
 		float gt = (float)(milisegundos % this->tempo) / this->tempo;
@@ -192,6 +211,10 @@ private:
 				res[xyz] += TM[0][i] * P[i][xyz];
 			}
 		}
+
+		res[0] += this->x;
+		res[1] += this->y;
+		res[2] += this->z;
 
 		return Ponto(res);
 	}

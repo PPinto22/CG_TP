@@ -116,7 +116,7 @@ void renderScene(void) {
 			Translacao translacao = translacoes[i];
 
 			// Desenhar orbita
-			if (orbitas) {
+			if (orbitas && translacao.tempo > 0 && translacao.pontos.size() > 4) {
 				glDisable(GL_LIGHTING);
 				glColor3f(30.0 / 255.0, 30.0 / 255.0, 40.0 / 255.0);
 				glBindBuffer(GL_ARRAY_BUFFER, translacao.orbita);
@@ -132,13 +132,15 @@ void renderScene(void) {
 			// Rotacao pela orientacao da linha
 			if (tempo_rotacao <= 0) {
 				float* rot_matrix = translacao.getRotMatrix(time);
-				glMultMatrixf(rot_matrix);
-				free(rot_matrix);
+				if (rot_matrix) {
+					glMultMatrixf(rot_matrix);
+					free(rot_matrix);
+				}
 			}
 		}
 
 		// Rotacao explicita
-		if (tempo_rotacao > 0) {
+		if (tempo_rotacao > 0 && rotacao.tempo > 0) {
 			time = glutGet(GLUT_ELAPSED_TIME) % tempo_rotacao;
 			float angulo = (float)time / tempo_rotacao * 360.0f;
 			glRotatef(angulo, rotacao.x, rotacao.y, rotacao.z);
@@ -296,7 +298,14 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 		int numPontosControlo = 0;
 		float time = 0;
 		vector<Ponto> pontos;
+		float tx = 0, ty = 0, tz = 0;
 		if (elemTranslacao) {
+			const char* str_tx = elemTranslacao->Attribute("X");
+			if (str_tx) tx = atof(str_tx);
+			const char* str_ty = elemTranslacao->Attribute("Y");
+			if (str_ty) ty = atof(str_ty);
+			const char* str_tz = elemTranslacao->Attribute("Z");
+			if (str_tz) tz = atof(str_tz);
 			const char* str_time = elemTranslacao->Attribute("time");
 			if (str_time) time = atof(str_time);
 			TiXmlElement* elemPoint = elemTranslacao->FirstChildElement("point");
@@ -315,7 +324,7 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 		}
 		if (numPontosControlo >= 4 && time > 0)
 			translacao_OK = true;
-		Translacao translacao(time, pontos);
+		Translacao translacao(tx,ty,tz,time, pontos);
 		TiXmlElement* elemScale = group->FirstChildElement("scale");
 		float sx = 1.0f, sy = 1.0f, sz = 1.0f;
 		if (elemScale) {
@@ -327,13 +336,10 @@ void prepareGroup(TiXmlElement* group, Transformacao t) {
 			if (str_sz) sz = atof(str_sz);
 		}
 
-		Transformacao transformacao;
 		if (translacao_OK) {
 			translacao.gerarLinhaOrbita(PONTOS_LINHA_ORBITA);
-			transformacao = Transformacao(rotacao, translacao, sx, sy, sz);
 		}
-		else
-			transformacao = Transformacao(rotacao, sx, sy, sz);
+		Transformacao transformacao = Transformacao(rotacao, translacao, sx, sy, sz);;
 
 		transformacao.merge(t);
 		TiXmlElement* model = group->FirstChildElement("models")->FirstChildElement("model");

@@ -1,0 +1,68 @@
+<scene>
+	<lights>
+		<light type="POINT" posX=30 posY=15 posZ=30/>
+	</lights>
+	<group>	<!-- Sol -->
+		<translate X=30 Y=0 Z=30/>
+		<scale X=10 Y=10 Z=10/>
+		<models>
+			<model file="sphere.3d" texture="texturas/sol.jpg" emissR=255 emissG=100 emissB=0/>
+		</models>
+	</group>
+	<group>	<!-- Box -->
+		<rotate time=10 axisX=0.5 axisY=0.5 axisZ=0/>
+		<translate time=10 Y=20>
+			<point X=10   	Y=0 Z=0		/>
+			<point X=7.07 	Y=0 Z=-7.07 />
+			<point X=0    	Y=0 Z=-10	/>
+			<point X=-7.07	Y=0 Z=-7.07 />
+			<point X=-10  	Y=0 Z=0     />
+			<point X=-7.07	Y=0 Z=7.07  />
+			<point X=0		Y=0 Z=10    />
+			<point X=7.07 	Y=0 Z=7.07  />
+		</translate>
+		<scale X=10 Y=10 Z=10/>
+		<models>
+			<model file="box.3d" texture="texturas/terra.jpg"/>
+		</models>
+	</group>
+	<group>	<!-- Cone -->
+		<rotate time=20 axisX=1 axisY=0 axisZ=0/>
+		<translate time=10 Y=-10>
+			<point X=10   	Y=0 Z=0		/>
+			<point X=7.07 	Y=0 Z=-7.07 />
+			<point X=0    	Y=0 Z=-10   />
+			<point X=-7.07	Y=0 Z=-7.07 />
+			<point X=-10  	Y=0 Z=0     />
+			<point X=-7.07	Y=0 Z=7.07  />
+			<point X=0		Y=0 Z=10    />
+			<point X=7.07 	Y=0 Z=7.07  />
+		</translate>
+		<scale X=2 Y=2 Z=2/>
+		<models>
+			<model file="cone.3d" texture="texturas/terra.jpg"/>
+		</models>
+	</group>
+	<group>	<!-- Plano 1 -->
+		<scale X=5 Y=5 Z=5/>
+		<translate X=30 Y=-20/>
+		<rotate time=5 axisX=1 axisY=0 axisZ=0/>
+		<models>
+			<model file="plane.3d" 
+			diffR=255 diffG=0 diffB=0
+			specR=0 specG=255 specB=0
+			ambR=150 ambG=150 ambB=0/>
+		</models>
+	</group>
+		<group>	<!-- Plano 2 -->
+		<scale X=5 Y=5 Z=5/>
+		<translate X=30 Y=-20/>
+		<rotate time=5 axisX=-1 axisY=0 axisZ=0/>
+		<models>
+			<model file="plane.3d" 
+			diffR=255 diffG=0 diffB=0
+			specR=0 specG=255 specB=0
+			ambR=150 ambG=150 ambB=0/>
+		</models>
+	</group>
+</scene>
