@@ -86,8 +86,9 @@ public:
 		MatrizPontos V = getV(coluna);
 		MatrizPontos resultado = U.multiplica(this->M).multiplica(this->P).multiplica(this->M).multiplica(V);
 
-
-		return resultado.getPonto(0,0);
+		Ponto result = resultado.getPonto(0,0);
+		result.setTextXY(coluna,1.0-linha);
+		return result;
 
 	}
 	Ponto* getVertices(int tesselation){
@@ -99,6 +100,7 @@ public:
 			float u = i*(1/(3.0*tesselation));
 			for(int j = 0;j<3*tesselation;j++){
 				float v = j*(1/(3.0*tesselation));
+				
 				Ponto p = this->getPonto(u,v);
 				Ponto q = this->getPonto(u+intervalo,v);
 				Ponto r = this->getPonto(u,v+intervalo);
@@ -106,19 +108,18 @@ public:
 
 				vertices[count] = p;
 				count++;
-				vertices[count] = q;
-				count++;
 				vertices[count] = r;
+				count++;
+				vertices[count] = q;
 				count++;
 
 				vertices[count] = r;
-				count++;
-				vertices[count] = q;
 				count++;
 				vertices[count] = s;
 				count++;
+				vertices[count] = q;
+				count++;
 				
-
 				/*
 				p_______r
 				|		|

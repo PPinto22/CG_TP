@@ -5,7 +5,7 @@ using namespace std;
 
 
 class Ponto {
-private: float xval, yval, zval;
+private: float xval, yval, zval, textXx, textYy;
 
 public:
 	Ponto(){
@@ -27,9 +27,15 @@ public:
 	void setZ(float z){
 		this->zval = z;
 	}
+	void setTextXY(float x, float y){
+		this->textXx = x;
+		this->textYy = y;
+	}
 	float x() { return xval; }
 	float y() { return yval; }
 	float z() { return zval; }
+	float textX() {return textXx; }
+	float textY() {return textYy; }
 	
 	Ponto subtrai(Ponto pt){
 		Ponto newP = Ponto(this->xval-pt.x(),this->yval-pt.y(),this->zval-pt.z());
@@ -62,6 +68,10 @@ public:
 	}
 	string toString(){
 		string sponto = to_string(xval) + " " + to_string(yval) + " " + to_string(zval);
+		return sponto;
+	}
+	string toString2d(){
+		string sponto = to_string(xval) + " " + to_string(yval);
 		return sponto;
 	}
 

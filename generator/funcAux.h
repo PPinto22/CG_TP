@@ -21,20 +21,20 @@ string removeVirgulas(string s){
 	return s;
 }
 
-string escreveTriangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3, Ponto normal) {
-    string triangulo = ponto1.toString() + " " + normal.toString() + "\n" +
-					   ponto2.toString() + " " + normal.toString() + "\n" +
-					   ponto3.toString() + " " + normal.toString();
+string escreveTriangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3, Ponto normal, Ponto t1, Ponto t2, Ponto t3) {
+    string triangulo = ponto1.toString() + " " + normal.toString() + " " + t1.toString2d() + "\n" +
+					   ponto2.toString() + " " + normal.toString() + " " + t2.toString2d() + "\n" +
+					   ponto3.toString() + " " + normal.toString() + " " + t3.toString2d();
     return triangulo;
 }
 
-string escreveRectangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3, Ponto ponto4, Ponto normal) {
-    string rectangulo = ponto1.toString() + " " + normal.toString() + "\n" +
-						ponto2.toString() + " " + normal.toString() + "\n" +
-						ponto3.toString() + " " + normal.toString() + "\n" +
-						ponto3.toString() + " " + normal.toString() + "\n" +
-						ponto4.toString() + " " + normal.toString() + "\n" +
-						ponto1.toString() + " " + normal.toString();
+string escreveRectangulo(Ponto ponto1, Ponto ponto2, Ponto ponto3, Ponto ponto4, Ponto normal, Ponto c1, Ponto c2, Ponto c3, Ponto c4) {
+    string rectangulo = ponto1.toString() + " " + normal.toString() + " " + c1.toString2d() + "\n" +
+						ponto2.toString() + " " + normal.toString() + " " + c2.toString2d() + "\n" +
+						ponto3.toString() + " " + normal.toString() + " " + c3.toString2d() + "\n" +
+						ponto3.toString() + " " + normal.toString() + " " + c3.toString2d() + "\n" +
+						ponto4.toString() + " " + normal.toString() + " " + c4.toString2d() + "\n" +
+						ponto1.toString() + " " + normal.toString() + " " + c1.toString2d();
     return rectangulo;
 }
 

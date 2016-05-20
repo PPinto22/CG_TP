@@ -11,7 +11,6 @@
 #include "patch.h"
 #include "patchSet.h"
 
-
 void plane(float lado, string ficheiro) {
 	string nVertices = ("6");
 	float coord = lado / 2;
@@ -22,21 +21,17 @@ void plane(float lado, string ficheiro) {
 	Ponto pt4(-coord, 0, coord);
 	Ponto normal(0.0,1.0,0.0);
 
+	Ponto tex1(1.0,0.0,0.0);
+	Ponto tex2(1.0,1.0,0.0);
+	Ponto tex3(0.0,1.0,0.0);
+	Ponto tex4(0.0,0.0,0.0);
 
 	ofstream outfile(ficheiro);
 
 	outfile << nVertices << endl;
-	/*outfile << escreveTriangulo(pt1, pt2, pt3, normal) << endl;
-	outfile << escreveTriangulo(pt3, pt4, pt1, normal);*/
-	string triangulo1 =	pt1.toString() + " " + normal.toString() + " " + "1.0" + " " + "1.0" + "\n" +
-					   	pt2.toString() + " " + normal.toString() + " " + "1.0" + " " + "0.0" + "\n" +
-					   	pt3.toString() + " " + normal.toString() + " " + "0.0" + " " + "0.0";
-	string triangulo2 = pt3.toString() + " " + normal.toString() + " " + "0.0" + " " + "0.0" + "\n" +
-					   	pt4.toString() + " " + normal.toString() + " " + "0.0" + " " + "1.0" + "\n" +
-					   	pt1.toString() + " " + normal.toString() + " " + "1.0" + " " + "1.0";
+	outfile << escreveTriangulo(pt1, pt2, pt3, normal, tex1, tex2, tex3) << endl;
+	outfile << escreveTriangulo(pt3, pt4, pt1, normal, tex3, tex4, tex1);
 
-	outfile << triangulo1 << endl;
-	outfile << triangulo2 << endl;
 	outfile.close();
 }
 
@@ -58,18 +53,24 @@ void box(float x, float y, float z, string ficheiro) {
 	ofstream outfile(ficheiro);
 
 	outfile << nVertices << endl;
+	
+	Ponto coordTextura1(1.0,0.0,0.0);
+	Ponto coordTextura2(1.0,1.0,0.0);
+	Ponto coordTextura3(0.0,1.0,0.0);
+	Ponto coordTextura4(0.0,0.0,0.0);
+
 	Ponto normal1(0,-1,0);
-	outfile << escreveRectangulo(pt4, pt3, pt2, pt1, normal1) << endl;
+	outfile << escreveRectangulo(pt4, pt3, pt2, pt1, normal1,coordTextura1,coordTextura2,coordTextura3,coordTextura4) << endl;
 	Ponto normal2(0,1,0);
-	outfile << escreveRectangulo(pt5, pt6, pt7, pt8, normal2) << endl;
+	outfile << escreveRectangulo(pt5, pt6, pt7, pt8, normal2,coordTextura1,coordTextura2,coordTextura3,coordTextura4) << endl;
 	Ponto normal3(1,0,0);
-	outfile << escreveRectangulo(pt1, pt5, pt8, pt4, normal3) << endl;
+	outfile << escreveRectangulo(pt1, pt5, pt8, pt4, normal3,coordTextura1,coordTextura2,coordTextura3,coordTextura4) << endl;
 	Ponto normal4(-1,0,0);
-	outfile << escreveRectangulo(pt3, pt7, pt6, pt2, normal4) << endl;
+	outfile << escreveRectangulo(pt3, pt7, pt6, pt2, normal4,coordTextura1,coordTextura2,coordTextura3,coordTextura4) << endl;
 	Ponto normal5(0,0,1);
-	outfile << escreveRectangulo(pt4, pt8, pt7, pt3, normal5) << endl;
+	outfile << escreveRectangulo(pt4, pt8, pt7, pt3, normal5,coordTextura1,coordTextura2,coordTextura3,coordTextura4) << endl;
 	Ponto normal6(0,0,-1);
-	outfile << escreveRectangulo(pt2, pt6, pt5, pt1, normal6);
+	outfile << escreveRectangulo(pt2, pt6, pt5, pt1, normal6,coordTextura1,coordTextura2,coordTextura3,coordTextura4);
 
 	outfile.close();
 }
@@ -102,30 +103,40 @@ void sphere(float radius, int slices, int stacks, string ficheiro) {
 	int numVertices = stacks*slices * 6;
 	outfile << numVertices << endl;
 
+	float xx,yy,xSlice_direita,yStack_cima;
 	//Escreve triangulos
 	for(int stack = 0; stack<stacks; stack++){
 		for(int slice = 0; slice<slices; slice++){
 			int slice_direita = (slice + 1)%slices;
-
 			Ponto p;
+
+			xx = (float)slice/slices;
+			yy = (float)stack/stacks;
+
+			xSlice_direita = (float)slice_direita/slices;
+			yStack_cima = ((float)stack+1.0)/stacks;
 			
+			if(slice+1==slices){
+				xSlice_direita = 1;
+			}
+
 			p = pontos[stack][slice];
-			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << " " << to_string(xx) << " " << to_string(yy) << endl;
 
 			p = pontos[stack+1][slice_direita]; 
-			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << " " << to_string(xSlice_direita) << " " << to_string(yStack_cima) << endl;
 
 			p = pontos[stack + 1][slice];
-			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << " " << to_string(xx) << " " << to_string(yStack_cima) << endl;
 
 			p = pontos[stack][slice];
-			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << " " << to_string(xx) << " " << to_string(yy) << endl;
 
 			p = pontos[stack][slice_direita];
-			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << " " << to_string(xSlice_direita) << " " << to_string(yy) << endl;
 
 			p = pontos[stack + 1][slice_direita];
-			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << endl;
+			outfile << p.toString(); p.normalize(); outfile << " " << p.toString() << " " << to_string(xSlice_direita) << " " << to_string(yStack_cima) << endl;
 		}
 	}
 	outfile.close();
@@ -157,60 +168,68 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 	ofstream outfile(ficheiro);
 	int numVertices = slices*stacks * 6 + 3 * slices;
 	outfile << numVertices << endl;
+	float xx,yy,xSlice_direita,yStack_cima;
 
 	//Escreve triangulos laterais
 	for(int stack = 0; stack<stacks; stack++){
 		for(int slice = 0; slice<slices; slice++){
 			int slice_direita = (slice + 1)%slices;
 
-				Ponto v1 = pontos[stack][slice+1].subtrai(pontos[stack][slice]);
+				xx=(float)slice/slices;
+				yy=((((float)stack/stacks)/1.6)+0.375);
+				xSlice_direita = slice_direita/slices;
+				yStack_cima = yy+(((float)stack/stacks)/1.6)+0.375;
+
+				if(slice==slices-1){
+					xSlice_direita = 1;
+				}
+
+				Ponto v1 = pontos[stack][slice_direita].subtrai(pontos[stack][slice]);
 				Ponto v2 = pontos[stack+1][slice].subtrai(pontos[stack][slice]);
 				Ponto v = v1.cross(v2);
 				v = v2.cross(v1);
 				v.normalize();
-
-				
-				outfile << pontos[stack][slice].toString() << " " << v.toString() << endl;
-
+				outfile << pontos[stack][slice].toString() << " " << v.toString() << " " << to_string(xx) << " " << to_string(yy) << endl;
+				/*---*/
 				v1 = pontos[stack+1][slice].subtrai(pontos[stack+1][slice_direita]);
 				
 				v2 = pontos[stack][slice_direita].subtrai(pontos[stack+1][slice_direita]);
 				v = v1.cross(v2);
 				v.normalize();
 
-				outfile << pontos[stack + 1][slice_direita].toString() << " " << v.toString() << endl;
-
+				outfile << pontos[stack + 1][slice_direita].toString() << " " << v.toString() << " " << to_string(xSlice_direita) << " " << to_string(yStack_cima) << endl;
+				/*---*/
 				v1 = pontos[stack][slice].subtrai(pontos[stack+1][slice]);
 				
 				v2 = pontos[stack+1][slice_direita].subtrai(pontos[stack+1][slice]);
 				v = v1.cross(v2);
 				v.normalize();
 
-				outfile << pontos[stack + 1][slice].toString() << " " << v.toString() << endl;
-
-				v1 = pontos[stack][slice+1].subtrai(pontos[stack][slice]);
+				outfile << pontos[stack + 1][slice].toString() << " " << v.toString() << " " << to_string(xx) << " " << to_string(yStack_cima) <<  endl;
+				/*---*/
+				v1 = pontos[stack][slice_direita].subtrai(pontos[stack][slice]);
 				
 				v2 = pontos[stack+1][slice].subtrai(pontos[stack][slice]);
 				v = v1.cross(v2);
 				v.normalize();
 
-				outfile << pontos[stack][slice].toString() << " " << v.toString() << endl;
-
+				outfile << pontos[stack][slice].toString() << " " << v.toString() << " " << to_string(xx) << " " << to_string(yy) << endl;
+				/*---*/
 				v1 = pontos[stack+1][slice_direita].subtrai(pontos[stack][slice_direita]);
 				
 				v2 = pontos[stack][slice].subtrai(pontos[stack][slice_direita]);
 				v = v1.cross(v2);
 				v.normalize();
 
-				outfile << pontos[stack][slice_direita].toString() << " " << v.toString() << endl;
-
+				outfile << pontos[stack][slice_direita].toString() << " " << v.toString() << " " << to_string(xSlice_direita) << " " << to_string(yy) << endl;
+				/*---*/
 				v1 = pontos[stack+1][slice].subtrai(pontos[stack+1][slice_direita]);
 				
 				v2 = pontos[stack][slice_direita].subtrai(pontos[stack+1][slice_direita]);
 				v = v1.cross(v2);
 				v.normalize();
 
-				outfile << pontos[stack + 1][slice_direita].toString() << " " << v.toString() << endl;
+				outfile << pontos[stack + 1][slice_direita].toString() << " " << v.toString() << " " << to_string(xSlice_direita) << " " << to_string(yStack_cima) << endl;
 
 		}
 	}
@@ -218,9 +237,22 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 	//Escreve triangulos da base
 	for(int slice = 0; slice<slices; slice++){
 		int slice_direita=(slice+1)%slices;
-		outfile << pontos[0][slice].toString() << " " << Ponto(0,-1,0).toString() << endl;
-		outfile << pBot.toString() << " " << Ponto(0,-1,0).toString() << endl;
-		outfile << pontos[0][slice_direita].toString() << " " << Ponto(0,-1,0).toString() << endl;
+
+		float intervalo = (float)slice/slices;
+		float coord = intervalo*360/slices;
+		float intervalo_direita = (float)slice_direita/slices;
+		float coord_direita = intervalo_direita*360/slices;
+		float xxx = cos(coord)*0.1875+0.5;
+		float yyy = sin(coord)*0.1875+0.1875;
+		float xxSlice_direita = cos(coord_direita)*0.1875+0.5;
+
+		if(slice==slices-1){
+			xxSlice_direita = 0;
+		}
+
+		outfile << pontos[0][slice].toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(xxx) << " " << to_string(yyy) << endl;
+		outfile << pBot.toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(0.5) << " " << to_string(0.1875) << endl;
+		outfile << pontos[0][slice_direita].toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(xxSlice_direita) << " " << to_string(yyy) << endl;
 	}
 
 	outfile.close();
@@ -313,47 +345,49 @@ void bezier(string input,int tesselation, string output){
 		Ponto* pts = patches[i].getVertices(tesselation);
 		
 		for(int j = 0;j<(3*tesselation)*(3*tesselation)*6;j+=6){
+
 			Ponto v1 = pts[j+1].subtrai(pts[j]);
 			Ponto v2 = pts[j+2].subtrai(pts[j]);
 			Ponto v = v1.cross(v2);
 			v.normalize();
 
-			outfile << pts[j].toString() << " " << v.toString() << endl;
+			
+			outfile << pts[j].toString() << " " << v.toString() << " " << to_string(pts[j].textX()) << " " << to_string(pts[j].textY()) << endl;
 			/*-----------------*/
 			v1 = pts[j+5].subtrai(pts[j+1]);
 			v2 = pts[j].subtrai(pts[j+1]);
 			v = v1.cross(v2);
 			v.normalize();
 			
-			outfile << pts[j+1].toString() << " " << v.toString() << endl;
+			outfile << pts[j+1].toString() << " " << v.toString() << " " << to_string(pts[j+1].textX()) << " " << to_string(pts[j+1].textY()) << endl;
 			/*-----------------*/
 			
 			v1 = pts[j].subtrai(pts[j+2]);
 			v2 = pts[j+5].subtrai(pts[j+2]);
 			v = v1.cross(v2);
 			v.normalize();
-			outfile << pts[j+2].toString() << " " << v.toString() << endl;
+			outfile << pts[j+2].toString() << " " << v.toString() << " " << to_string(pts[j+2].textX()) << " " << to_string(pts[j+2].textY()) << endl;
 			/*-----------------*/
 
 			v1 = pts[j].subtrai(pts[j+3]);
 			v2 = pts[j+5].subtrai(pts[j+3]);
 			v = v1.cross(v2);
 			v.normalize();
-			outfile << pts[j+3].toString() << " " << v.toString() << endl;
+			outfile << pts[j+3].toString() << " " << v.toString() << " " << to_string(pts[j+3].textX()) << " " << to_string(pts[j+3].textY()) << endl;
 			/*-----------------*/
 
 			v1 = pts[j+5].subtrai(pts[j+4]);
 			v2 = pts[j].subtrai(pts[j+4]);
 			v = v1.cross(v2);
 			v.normalize();
-			outfile << pts[j+4].toString() << " " << v.toString() << endl;
+			outfile << pts[j+4].toString() << " " << v.toString() << " " << to_string(pts[j+4].textX()) << " " << to_string(pts[j+4].textY()) << endl;
 			/*-----------------*/
 
 			v1 = pts[j+3].subtrai(pts[j+5]);
 			v2 = pts[j+4].subtrai(pts[j+5]);
 			v = v1.cross(v2);
 			v.normalize();
-			outfile << pts[j+5].toString() << " " << v.toString() << endl;
+			outfile << pts[j+5].toString() << " " << v.toString() << " " << to_string(pts[j+5].textX()) << " " << to_string(pts[j+1].textY()) << endl;
 		}
 	}
 }
