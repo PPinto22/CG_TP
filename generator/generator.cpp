@@ -176,10 +176,14 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 			int slice_direita = (slice + 1)%slices;
 
 				xx=(float)slice/slices;
-				yy=((((float)stack/stacks)/1.6)+0.375);
-				xSlice_direita = slice_direita/slices;
-				yStack_cima = yy+(((float)stack/stacks)/1.6)+0.375;
+				yy=((((float)stack/stacks)*0.625)+0.375);
+				xSlice_direita = (float)slice_direita/slices;
+				yStack_cima = yy+((1.0/stacks)*0.625);
+				printf("Slice da direita = %f\n",yStack_cima);
 
+				if(stack==stacks-1){
+					yStack_cima = 1;
+				}
 				if(slice==slices-1){
 					xSlice_direita = 1;
 				}
@@ -187,7 +191,7 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 				Ponto v1 = pontos[stack][slice_direita].subtrai(pontos[stack][slice]);
 				Ponto v2 = pontos[stack+1][slice].subtrai(pontos[stack][slice]);
 				Ponto v = v1.cross(v2);
-				v = v2.cross(v1);
+				v = v1.cross(v2);
 				v.normalize();
 				outfile << pontos[stack][slice].toString() << " " << v.toString() << " " << to_string(xx) << " " << to_string(yy) << endl;
 				/*---*/
@@ -234,25 +238,27 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 		}
 	}
 
+	float intervalo = (1.0/slices)*2*M_PI;
+	float xx_,coord_x,coord_y,coord_xx,coord_yy;
+
 	//Escreve triangulos da base
 	for(int slice = 0; slice<slices; slice++){
 		int slice_direita=(slice+1)%slices;
 
-		float intervalo = (float)slice/slices;
-		float coord = intervalo*360/slices;
-		float intervalo_direita = (float)slice_direita/slices;
-		float coord_direita = intervalo_direita*360/slices;
-		float xxx = cos(coord)*0.1875+0.5;
-		float yyy = sin(coord)*0.1875+0.1875;
-		float xxSlice_direita = cos(coord_direita)*0.1875+0.5;
+		xx_ = slice*intervalo;
+		coord_x = (cos(xx_)*0.1875)+0.5;
+		coord_y = (sin(xx_)*0.1875)+0.1875;
+		coord_xx = (cos(xx_+((1.0/slices)*intervalo))*0.1875)+0.5;
+		coord_yy = (sin(xx_+((1.0/slices)*intervalo))*0.1875)+0.1875;
 
 		if(slice==slices-1){
-			xxSlice_direita = 0;
+			coord_xx = 0.5+0.1875;
+			coord_yy = 0.1875;
 		}
 
-		outfile << pontos[0][slice].toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(xxx) << " " << to_string(yyy) << endl;
+		outfile << pontos[0][slice].toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(coord_x) << " " << to_string(coord_y) << endl;
 		outfile << pBot.toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(0.5) << " " << to_string(0.1875) << endl;
-		outfile << pontos[0][slice_direita].toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(xxSlice_direita) << " " << to_string(yyy) << endl;
+		outfile << pontos[0][slice_direita].toString() << " " << Ponto(0,-1,0).toString() << " " << to_string(coord_xx) << " " << to_string(coord_yy) << endl;
 	}
 
 	outfile.close();
