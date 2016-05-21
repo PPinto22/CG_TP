@@ -1,9 +1,9 @@
 <scene>
 	<lights>
-		<light type="POINT" posX=30 posY=0 posZ=-30/>
+		<light type="POINT" posX=30 posY=0 posZ=30/>
 	</lights>
 	<group>	<!-- Sol -->
-		<translate X=30 Y=0 Z=-30/>
+		<translate X=30 Y=0 Z=30/>
 		<scale X=10 Y=10 Z=10/>
 		<models>
 			<model file="sphere.3d" texture="texturas/sol.jpg" emissR=255 emissG=100 emissB=0/>
