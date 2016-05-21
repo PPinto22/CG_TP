@@ -179,7 +179,6 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 				yy=((((float)stack/stacks)*0.625)+0.375);
 				xSlice_direita = (float)slice_direita/slices;
 				yStack_cima = yy+((1.0/stacks)*0.625);
-				printf("Slice da direita = %f\n",yStack_cima);
 
 				if(stack==stacks-1){
 					yStack_cima = 1;
@@ -248,8 +247,8 @@ void cone(float bottomRadius, float height, int slices, int stacks, string fiche
 		xx_ = slice*intervalo;
 		coord_x = (cos(xx_)*0.1875)+0.5;
 		coord_y = (sin(xx_)*0.1875)+0.1875;
-		coord_xx = (cos(xx_+((1.0/slices)*intervalo))*0.1875)+0.5;
-		coord_yy = (sin(xx_+((1.0/slices)*intervalo))*0.1875)+0.1875;
+		coord_xx = (cos(xx_-((1.0/slices)*intervalo))*0.1875)+0.5;
+		coord_yy = (sin(xx_-((1.0/slices)*intervalo))*0.1875)+0.1875;
 
 		if(slice==slices-1){
 			coord_xx = 0.5+0.1875;
